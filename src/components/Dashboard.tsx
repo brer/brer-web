@@ -1,16 +1,15 @@
 'use client'
 import { useEffect, useState } from 'react'
-import Image from 'next/image'
 
 import {
   MagnifyingGlassIcon,
   PlusIcon,
   ExclamationCircleIcon,
 } from '@heroicons/react/20/solid'
-import signature from '../../public/assets/images/brer-signature.png'
-import logo from '../../public/assets/images/brer-logo-bg-brown.png'
+
 import { Fn } from '@/lib/models/function.model'
 import { searchFunctions } from '@/lib/services/functions.service'
+import Logo from './Logo'
 
 export default function Dashboard() {
   // Models
@@ -36,10 +35,7 @@ export default function Dashboard() {
       <div className="w-1/3 max-w-xs shadow-xl flex flex-col">
         <div className="border-b">
           <div className="flex p-3 flex-row justify-between items-center">
-            <div className="flex flex-row justify-between items-center">
-              <Image className="w-8 h-8 rounded mr-2" src={logo} alt="" />
-              <Image className="h-4 w-auto" src={signature} alt="" />
-            </div>
+            <Logo />
             <button className="inline-flex items-center px-2 py-1 text-sm font-medium rounded-md bg-yellow-800 text-white text-xs hover:bg-yellow-900 active:bg-yellow-950 focus:outline-none focus:ring focus:ring-yellow-700 nowrap flex-nowrap">
               <PlusIcon className="mr-1 h-6" />{' '}
               <span className="whitespace-nowrap">New function</span>
