@@ -1,6 +1,6 @@
 import Image from 'next/image'
-import signature from '../../public/assets/images/brer-signature.png'
-import logo from '../../public/assets/images/brer-logo-bg-brown.png'
+import signature from '../../../public/assets/images/brer-signature.png'
+import logo from '../../../public/assets/images/brer-logo-bg-brown.png'
 
 export default function Logo() {
   return (

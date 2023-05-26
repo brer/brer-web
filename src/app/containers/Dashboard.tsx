@@ -1,11 +1,11 @@
 'use client'
 import { useEffect, useState } from 'react'
 
-import { Fn } from '@/lib/models/function.model'
-import { searchFunctions } from '@/lib/services/functions.service'
-import Logo from './Logo'
-import Button from './ui/Button'
-import Input from './ui/Input'
+import { Fn } from '../lib/models/function.model'
+import { searchFunctions } from '../lib/services/functions.service'
+import Logo from '../components/Logo'
+import Button from '../components/Button'
+import Input from '../components/Input'
 import FunctionsList from './FunctionsList'
 
 export default function Dashboard() {

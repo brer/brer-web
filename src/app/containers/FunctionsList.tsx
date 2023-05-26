@@ -1,5 +1,5 @@
-import { Fn } from '@/lib/models/function.model'
 import { ExclamationCircleIcon, ArrowPathIcon } from '@heroicons/react/20/solid'
+import { Fn } from '../lib/models/function.model'
 
 interface FunctionsListParams {
   functions?: Fn[]
