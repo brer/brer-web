@@ -8,21 +8,20 @@
  */
 function fetchData(
   method: 'POST' | 'GET' | 'DELETE' | 'PUT' | 'PATCH',
-  api: string,
+  apiModel: string,
   body?: any
 ): Promise<Response> {
-  const BRER_URL = process.env.NEXT_PUBLIC_BRER_URL
-  const BRER_TOKEN = process.env.NEXT_PUBLIC_BRER_TOKEN
-  const API_PATH = process.env.NEXT_PUBLIC_API_PATH
+  const API_URL = process.env.NEXT_PUBLIC_API_URL
+  const TOKEN = process.env.NEXT_PUBLIC_TOKEN
 
-  if (!BRER_URL || !BRER_TOKEN || !API_PATH) {
+  if (!API_URL || !TOKEN) {
     throw new Error('Brer application not correctly configured')
   }
 
-  return fetch(`${BRER_URL}/${API_PATH}/${api}`, {
+  return fetch(`/api/${apiModel}`, {
     method,
     headers: {
-      Authorization: `Bearer ${BRER_TOKEN}`,
+      Authorization: `Bearer ${TOKEN}`,
       'Content-Type': 'application/json',
     },
     body: body ? JSON.stringify(body) : undefined,

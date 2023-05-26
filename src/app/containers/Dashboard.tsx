@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 
 import { Fn } from '../lib/models/function.model'
 import { searchFunctions } from '../lib/services/functions.service'
+
 import Logo from '../components/Logo'
 import Button from '../components/Button'
 import Input from '../components/Input'
@@ -12,7 +13,8 @@ export default function Dashboard() {
   // Models
   const [searchName, setSearchName] = useState<string | undefined>()
   const [functions, setFunctions] = useState<Fn[] | undefined>()
-  const [isLoading, setIsLoading] = useState(false)
+  const [currentFunction, setCurrentFunction] = useState<Fn | undefined>()
+  const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
 
   // Handlers
@@ -31,6 +33,9 @@ export default function Dashboard() {
     setSearchName(text)
     searchFns()
   }
+  const handleSelectFunction = (fn: Fn) => {
+    setCurrentFunction(fn)
+  }
 
   // Lifecycle
   useEffect(() => searchFns(), [])
@@ -46,6 +51,8 @@ export default function Dashboard() {
           functions={functions}
           isLoading={isLoading}
           isError={isError}
+          currentId={currentFunction?._id}
+          onSelectFunction={handleSelectFunction}
         ></FunctionsList>
       </div>
     </div>

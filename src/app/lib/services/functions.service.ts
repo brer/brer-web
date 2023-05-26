@@ -1,6 +1,7 @@
 import { Fn, FnUpdateBody } from '../models/function.model'
 import { postData, getData, putData } from '../utilities/http.lib'
 import { Invocation } from '../models/invocation.model'
+import { FUNCTIONS_MOCK } from '../consts/function.const'
 
 const API_MODEL = 'functions'
 const API_VERSION = 'v1'
@@ -53,5 +54,16 @@ export function triggerFunction(
  * @returns the Promise<Fn[]> for search functions
  */
 export function searchFunctions(name?: string): Promise<Fn[]> {
-  return getData(`${API_VERSION}/${API_MODEL}`, name ? { name } : undefined)
+  // return getData(`${API_VERSION}/${API_MODEL}`, name ? { name } : undefined)
+  return Promise.all(FUNCTIONS_MOCK)
+}
+
+/**
+ * Search invocations
+ * @param key - the function key
+ * @returns the Promise<>
+ */
+export function searchFunctionInvocations(key: string): Promise<Invocation[]> {
+  return getData(`${API_VERSION}/${API_MODEL}/${key}/invocations`)
+  // return Promise.all(FUNCTIONS_MOCK)
 }
