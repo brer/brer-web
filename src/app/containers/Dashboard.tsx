@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { CubeIcon } from '@heroicons/react/20/solid'
 
 import { Fn } from '../lib/models/function.model'
 import { searchFunctions } from '../lib/services/functions.service'
@@ -8,6 +9,7 @@ import Logo from '../components/Logo'
 import Button from '../components/Button'
 import Input from '../components/Input'
 import FunctionsList from './FunctionsList'
+import FunctionDetail from './FunctionDetail'
 
 export default function Dashboard() {
   // Models
@@ -33,9 +35,8 @@ export default function Dashboard() {
     setSearchName(text)
     searchFns()
   }
-  const handleSelectFunction = (fn: Fn) => {
-    setCurrentFunction(fn)
-  }
+  const handleSelectFunction = (fn: Fn) => setCurrentFunction(fn)
+  const handleUnselectFunction = () => setCurrentFunction(undefined)
 
   // Lifecycle
   useEffect(() => searchFns(), [])
@@ -54,6 +55,19 @@ export default function Dashboard() {
           currentId={currentFunction?._id}
           onSelectFunction={handleSelectFunction}
         ></FunctionsList>
+      </div>
+      <div className="w-full">
+        {currentFunction ? (
+          <FunctionDetail
+            fn={currentFunction}
+            onCloseFunction={handleUnselectFunction}
+          ></FunctionDetail>
+        ) : (
+          <div className="flex flex-col justify-center items-center h-full">
+            <CubeIcon className="h-24 w-24 mb-2" />
+            <h3>Select a function</h3>
+          </div>
+        )}
       </div>
     </div>
   )

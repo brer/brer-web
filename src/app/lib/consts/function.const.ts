@@ -4,31 +4,31 @@ export const FUNCTIONS_MOCK: Fn[] = [
   {
     _id: '1',
     name: 'Funzione 1',
-    image: 'verycool',
+    image: 'verycool.ghif',
     env: [],
   },
   {
     _id: '2',
     name: 'Funzione bella',
-    image: 'verycool',
+    image: 'kittycatimage.shubbishu',
     env: [],
   },
   {
     _id: '3',
     name: 'Function v2',
-    image: 'verycool',
+    image: 'yobitchimage.piennegi',
     env: [],
   },
   {
     _id: '4',
     name: 'Funzione v3',
-    image: 'verycool',
+    image: 'lorem_ipsum_image.geipegh',
     env: [],
   },
   {
     _id: '5',
     name: 'Super cool function',
-    image: 'something_very_cool',
+    image: 'something_very_cool.yo',
     env: [],
   },
   {

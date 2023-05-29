@@ -1,11 +1,12 @@
-import { PlusIcon } from '@heroicons/react/20/solid'
+import { PlayIcon, PlusIcon, XMarkIcon } from '@heroicons/react/20/solid'
 
 interface ButtonParams {
   size: 'xs' | 'sm' | 'm' | 'l' | 'xl'
   style: 'solid' | 'outline'
-  children: React.ReactNode
   onClick: () => void
-  icon?: 'plus'
+  className?: string
+  children?: React.ReactNode
+  icon?: 'plus' | 'x-mark' | 'play'
 }
 
 export default function Button({
@@ -13,11 +14,13 @@ export default function Button({
   icon,
   style,
   children,
+  className = '',
   onClick,
 }: ButtonParams) {
   // Classes
   let btnClasses =
-    'inline-flex nowrap flex-nowrap items-center px-2 py-1 focus:outline-none focus:ring'
+    className +
+    ' inline-flex nowrap flex-nowrap items-center px-2 py-1 focus:outline-none focus:ring'
 
   if (style === 'solid') {
     btnClasses +=
@@ -25,6 +28,13 @@ export default function Button({
       'hover:bg-yellow-900' +
       'active:bg-yellow-950' +
       'focus:ring-yellow-700'
+  } else if (style === 'outline') {
+    btnClasses +=
+      ' bg-white text-yellow-800 ' +
+      ' border border-yellow-800' +
+      ' hover:bg-slate-200' +
+      ' active:bg-slate-300' +
+      ' focus:ring-slate-400'
   }
 
   if (size === 'sm') {
@@ -36,12 +46,20 @@ export default function Button({
   }
 
   // Icon
-  let buttonIcon = icon === 'plus' ? <PlusIcon className="mr-1 h-6" /> : ''
+  let buttonIcon
+
+  if (icon === 'plus') {
+    buttonIcon = <PlusIcon className="h-6" />
+  } else if (icon === 'x-mark') {
+    buttonIcon = <XMarkIcon className="h-6" />
+  } else if (icon === 'play') {
+    buttonIcon = <PlayIcon className="h-6" />
+  }
 
   return (
     <button className={btnClasses} onClick={onClick}>
       {buttonIcon}
-      <span className="whitespace-nowrap">{children}</span>
+      {children && <span className="whitespace-nowrap">{children}</span>}
     </button>
   )
 }
