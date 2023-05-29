@@ -56,7 +56,7 @@ export const INVOCATIONS_MOCK: Invocation[] = [
   {
     _id: '3',
     status: 'initializing',
-    functionName: 'Funzione bella',
+    functionName: 'Function bella',
     image: 'kittycatimage.shubbishu',
     env: [],
     updatedAt: '2023-05-29T04:10:00.065+00:00',
@@ -74,7 +74,7 @@ export const INVOCATIONS_MOCK: Invocation[] = [
   {
     _id: '4',
     status: 'pending',
-    functionName: 'Function v2',
+    functionName: 'Function bestia',
     image: 'yobitchimage.piennegi',
     env: [],
     updatedAt: '2023-04-28T02:10:00.065+00:00',
@@ -88,7 +88,7 @@ export const INVOCATIONS_MOCK: Invocation[] = [
   {
     _id: '5',
     status: 'running',
-    functionName: 'Funzione v3',
+    functionName: 'Cenerentola Function',
     image: 'lorem_ipsum_image.geipegh',
     env: [],
     updatedAt: '2023-03-30T02:10:00.065+00:00',

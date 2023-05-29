@@ -40,15 +40,26 @@ interface HeaderParams {
 }
 
 function Header({ invocation, onPlayFunction, onCloseFunction }: HeaderParams) {
+  const updatedAt = invocation.updatedAt
+    ? format(new Date(invocation.updatedAt), 'dd MMM yy, HH:mm:SS')
+    : undefined
+
   return (
     <div className="pt-8 px-8 flex justify-between">
-      <h1
-        className="text-2xl font-bold text-yellow-800 truncate whitespace-nowrap"
-        title={invocation.functionName}
-      >
-        {invocation.functionName}
-      </h1>
-      <div className="flex">
+      <div className="flex flex-col">
+        <h1
+          className="text-2xl font-bold text-yellow-800 truncate whitespace-nowrap"
+          title={invocation.functionName}
+        >
+          {invocation.functionName}
+        </h1>
+        {updatedAt && (
+          <p className="text-gray-400">
+            <strong>LAST UPDATE</strong> {updatedAt}
+          </p>
+        )}
+      </div>
+      <div className="flex justify-center items-center">
         <div className="bg-slate-700 text-white uppercase rounded-md flex items-center justify-center px-2">
           {invocation.status}
         </div>
@@ -76,20 +87,11 @@ interface ContentParams {
 }
 
 function Content({ invocation }: ContentParams) {
-  const updatedAt = invocation.updatedAt
-    ? format(new Date(invocation.updatedAt), 'dd MMM yy, HH:mm:SS')
-    : undefined
-
   return (
     <div className="p-8 h-full">
       <p className="text-gray-400">
         <strong>ID</strong> {invocation._id}
       </p>
-      {updatedAt && (
-        <p className="text-gray-400">
-          <strong>LAST UPDATE</strong> {updatedAt}
-        </p>
-      )}
       <p className="text-gray-400">
         <strong>RESULT</strong> -
       </p>

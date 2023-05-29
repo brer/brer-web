@@ -83,7 +83,7 @@ function Header({ onCreateFunction, onSearchFunctions }: HeaderParams) {
     <div className="border-b">
       <div className="flex p-3 flex-row justify-between items-center">
         <Logo />
-        <Button size="sm" style="solid" icon="plus" onClick={onCreateFunction}>
+        <Button size="m" style="solid" icon="plus" onClick={onCreateFunction}>
           New function
         </Button>
       </div>

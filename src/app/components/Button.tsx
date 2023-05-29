@@ -38,11 +38,11 @@ export default function Button({
   }
 
   if (size === 'sm') {
-    btnClasses += ' text-sm rounded'
+    btnClasses += ' text-sm rounded h-6'
   } else if (size === 'm') {
-    btnClasses += ' text-m rounded-md'
+    btnClasses += ' text-m rounded-md h-8'
   } else if (size === 'xl') {
-    btnClasses += ' text-m rounded-lg'
+    btnClasses += ' text-m rounded-lg h-12'
   }
 
   // Icon
