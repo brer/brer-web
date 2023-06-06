@@ -24,7 +24,7 @@ export default function FunctionsList({
   const wrapperClasses =
     isLoading || isError || !functions?.length
       ? 'flex flex-col justify-center items-center h-full'
-      : 'flex flex-col h-full'
+      : 'flex flex-col h-full overflow-auto'
 
   if (isLoading) {
     return (

@@ -1,4 +1,9 @@
-import { PlayIcon, PlusIcon, XMarkIcon } from '@heroicons/react/20/solid'
+import {
+  PlayIcon,
+  PlusIcon,
+  XMarkIcon,
+  AdjustmentsHorizontalIcon,
+} from '@heroicons/react/20/solid'
 
 interface ButtonParams {
   size: 'xs' | 'sm' | 'm' | 'l' | 'xl'
@@ -6,7 +11,8 @@ interface ButtonParams {
   onClick: () => void
   className?: string
   children?: React.ReactNode
-  icon?: 'plus' | 'x-mark' | 'play'
+  icon?: 'plus' | 'x-mark' | 'play' | 'adjustments'
+  title?: string
 }
 
 export default function Button({
@@ -15,6 +21,7 @@ export default function Button({
   style,
   children,
   className = '',
+  title = '',
   onClick,
 }: ButtonParams) {
   // Classes
@@ -47,17 +54,20 @@ export default function Button({
 
   // Icon
   let buttonIcon
+  const iconClasses = 'h-6'
 
   if (icon === 'plus') {
-    buttonIcon = <PlusIcon className="h-6" />
+    buttonIcon = <PlusIcon className={iconClasses} />
   } else if (icon === 'x-mark') {
-    buttonIcon = <XMarkIcon className="h-6" />
+    buttonIcon = <XMarkIcon className={iconClasses} />
   } else if (icon === 'play') {
-    buttonIcon = <PlayIcon className="h-6" />
+    buttonIcon = <PlayIcon className={iconClasses} />
+  } else if (icon === 'adjustments') {
+    buttonIcon = <AdjustmentsHorizontalIcon className={iconClasses} />
   }
 
   return (
-    <button className={btnClasses} onClick={onClick}>
+    <button className={btnClasses} onClick={onClick} title={title}>
       {buttonIcon}
       {children && <span className="whitespace-nowrap">{children}</span>}
     </button>

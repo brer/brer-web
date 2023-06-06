@@ -1,16 +1,21 @@
+import { format } from 'date-fns'
 import { useEffect, useState } from 'react'
-import { Fn } from '../lib/models/function.model'
-import { Invocation } from '../lib/models/invocation.model'
-import { searchFunctionInvocations } from '../lib/services/functions.service'
-import InvocationsList from './InvocationsList'
 import {
   ArrowPathIcon,
   CubeTransparentIcon,
   ExclamationCircleIcon,
   InboxIcon,
 } from '@heroicons/react/20/solid'
+
+import { Fn } from '../lib/models/function.model'
 import Button from '../components/Button'
+import InvocationsList from './InvocationsList'
 import InvocationDetail from './InvocationDetail'
+import {
+  Invocation,
+  InvocationSearchParams,
+} from '../lib/models/invocation.model'
+import { searchInvocations } from '../lib/services/invocations.service'
 
 interface FunctionDetailParams {
   fn: Fn
@@ -25,11 +30,13 @@ export default function FunctionDetail({
   const [currentInvocation, setCurrentInvocation] = useState<
     Invocation | undefined
   >()
+  const [continueString, setContinueString] = useState<string | undefined>()
+  const [showEnvs, setShowEnvs] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
 
   // Handlers
-  const searchInvocations = () => {
+  const searchInvs = () => {
     if (!fn._id) {
       return
     }
@@ -37,14 +44,18 @@ export default function FunctionDetail({
     setCurrentInvocation(undefined)
     setIsLoading(true)
     setIsError(false)
-    searchFunctionInvocations(fn.name)
-      .then((invocations) => setInvocations(invocations))
+    searchInvocations(parseSearchParams())
+      .then((invs) => {
+        setInvocations(invs.invocations)
+        setContinueString(invs.continue)
+      })
       .catch((err) => setIsError(true))
       .finally(() => setIsLoading(false))
   }
   const handleSelectInvocation = (invocation: Invocation) =>
     setCurrentInvocation(invocation)
   const handleUnselectInvocation = () => setCurrentInvocation(undefined)
+  const handleToggleEnvs = (show: boolean) => setShowEnvs(show)
   const handlePlayInvocation = (invocation: Invocation) =>
     console.log(invocation)
   const handleLogInvocation = (invocation: Invocation) =>
@@ -53,11 +64,34 @@ export default function FunctionDetail({
     console.log(invocation)
 
   // Lifecycle
-  useEffect(() => searchInvocations(), [fn.name])
+  useEffect(() => searchInvs(), [fn.name])
+
+  // Utilities
+  const parseSearchParams = () => {
+    const params: InvocationSearchParams = {
+      sort: 'createdAt',
+      direction: 'desc',
+    }
+
+    if (fn.name) {
+      params.functionName = fn.name
+    }
+
+    if (continueString) {
+      params.continue = continueString
+    }
+
+    return params
+  }
 
   return (
     <div className="flex flex-col h-full w-full">
-      <Header fn={fn} onCloseFunction={onCloseFunction}></Header>
+      <Header
+        fn={fn}
+        showEnvs={showEnvs}
+        onCloseFunction={onCloseFunction}
+        onToggleEnvFunction={handleToggleEnvs}
+      ></Header>
       <FunctionInvocations
         isLoading={isLoading}
         isError={isError}
@@ -75,33 +109,86 @@ export default function FunctionDetail({
 
 interface HeaderParams {
   fn: Fn
+  showEnvs: boolean
   onCloseFunction: () => void
+  onToggleEnvFunction: (show: boolean) => void
 }
 
-function Header({ fn, onCloseFunction }: HeaderParams) {
+function Header({
+  fn,
+  showEnvs,
+  onCloseFunction,
+  onToggleEnvFunction,
+}: HeaderParams) {
+  const createdAt = fn.createdAt
+    ? format(new Date(fn.createdAt), 'dd MMM yy, HH:mm:SS')
+    : undefined
+  const updatedAt = fn.updatedAt
+    ? format(new Date(fn.updatedAt), 'dd MMM yy, HH:mm:SS')
+    : undefined
+
   return (
     <div className="border-b p-8">
       <div className="flex justify-between">
-        <h1
-          className="text-2xl font-bold text-yellow-800 truncate whitespace-nowrap"
-          title={fn.name}
-        >
-          {fn.name}
-        </h1>
-        <Button
-          className="ml-2"
-          style="outline"
-          size="m"
-          onClick={onCloseFunction}
-          icon="x-mark"
-        ></Button>
+        <div>
+          <h1
+            className="text-2xl font-bold text-yellow-800 truncate whitespace-nowrap"
+            title={fn.name}
+          >
+            {fn.name}
+          </h1>
+          <p className="text-gray-400 text-sm">
+            <strong>IMAGE</strong> {fn.image}
+          </p>
+        </div>
+        <div className="flex">
+          <Button
+            className="ml-2"
+            style={showEnvs ? 'solid' : 'outline'}
+            size="m"
+            onClick={() => onToggleEnvFunction(!showEnvs)}
+            icon="adjustments"
+            title={showEnvs ? 'Hide ENVs' : 'Show ENVs'}
+          ></Button>
+          <Button
+            className="ml-2"
+            style="outline"
+            size="m"
+            onClick={onCloseFunction}
+            icon="x-mark"
+            title="Close function"
+          ></Button>
+        </div>
       </div>
-      <p className="text-gray-400 text-sm">
-        <strong>IMAGE</strong> {fn.image}
-      </p>
-      <p className="text-gray-400 text-sm">
-        <strong>ENV</strong>
-      </p>
+      {createdAt && (
+        <p className="text-gray-400 text-sm">
+          <strong>CREATED AT</strong> {createdAt}
+        </p>
+      )}
+      {updatedAt && (
+        <p className="text-gray-400 text-sm">
+          <strong>UPDATED AT</strong> {updatedAt}
+        </p>
+      )}
+      {fn.env && showEnvs && (
+        <div>
+          <hr className="my-4"></hr>
+          <table className="table-auto">
+            <tbody>
+              {fn.env
+                .filter((env) => !!env.value)
+                .map((env) => (
+                  <tr key={env.name}>
+                    <td className="pr-2">
+                      <strong>{env.name}</strong>
+                    </td>
+                    <td className="pl-2">{env.value}</td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   )
 }
@@ -162,8 +249,8 @@ function FunctionInvocations({
   }
 
   return (
-    <div className="flex h-full w-full">
-      <div className="w-1/4 border-r">
+    <div className="flex h-full w-full overflow-hidden">
+      <div className="w-1/4 border-r min-w-[250px]">
         <InvocationsList
           isLoading={isLoading}
           isError={isError}

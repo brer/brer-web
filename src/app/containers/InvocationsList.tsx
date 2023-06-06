@@ -24,7 +24,7 @@ export default function InvocationsList({
   const wrapperClasses =
     isLoading || isError || !invocations?.length
       ? 'flex flex-col justify-center items-center h-full'
-      : 'flex flex-col h-full'
+      : 'flex flex-col h-full overflow-auto'
 
   if (isLoading) {
     return (

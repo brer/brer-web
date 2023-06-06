@@ -61,3 +61,11 @@ export interface InvocationPhase {
    */
   date: string
 }
+
+export interface InvocationSearchParams {
+  functionName?: string
+  continue?: string
+  direction?: 'asc' | 'desc'
+  limit?: number
+  sort?: 'createdAt'
+}

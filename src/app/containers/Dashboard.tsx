@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { CubeIcon } from '@heroicons/react/20/solid'
 
-import { Fn } from '../lib/models/function.model'
+import { Fn, FnSearchParams } from '../lib/models/function.model'
 import { searchFunctions } from '../lib/services/functions.service'
 
 import Logo from '../components/Logo'
@@ -16,6 +16,7 @@ export default function Dashboard() {
   const [searchName, setSearchName] = useState<string | undefined>()
   const [functions, setFunctions] = useState<Fn[] | undefined>()
   const [currentFunction, setCurrentFunction] = useState<Fn | undefined>()
+  const [continueString, setContinueString] = useState<string | undefined>()
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
 
@@ -23,8 +24,11 @@ export default function Dashboard() {
   const searchFns = () => {
     setIsLoading(true)
     setIsError(false)
-    searchFunctions(searchName)
-      .then((fns) => setFunctions(fns))
+    searchFunctions(parseSearchParams())
+      .then((fns) => {
+        setContinueString(fns.continue)
+        setFunctions(fns.functions)
+      })
       .catch((err) => setIsError(true))
       .finally(() => setIsLoading(false))
   }
@@ -33,13 +37,27 @@ export default function Dashboard() {
   }
   const handleSearchFunctions = (text: string | undefined) => {
     setSearchName(text)
-    searchFns()
   }
   const handleSelectFunction = (fn: Fn) => setCurrentFunction(fn)
   const handleUnselectFunction = () => setCurrentFunction(undefined)
 
   // Lifecycle
   useEffect(() => searchFns(), [])
+
+  // Utilities
+  const parseSearchParams = () => {
+    const params: FnSearchParams = {}
+
+    if (searchName) {
+      params.name = searchName
+    }
+
+    if (continueString) {
+      params.continue = continueString
+    }
+
+    return params
+  }
 
   return (
     <div className="bg-white rounded-xl h-full w-full flex flex-row overflow-hidden drop-shadow-md hover:drop-shadow-2xl transition duration-150">
@@ -49,7 +67,9 @@ export default function Dashboard() {
           onSearchFunctions={handleSearchFunctions}
         ></Header>
         <FunctionsList
-          functions={functions}
+          functions={functions?.filter((f) =>
+            searchName ? f.name.includes(searchName) : true
+          )}
           isLoading={isLoading}
           isError={isError}
           currentId={currentFunction?._id}

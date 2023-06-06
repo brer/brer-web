@@ -1,6 +1,7 @@
 import { format } from 'date-fns'
 
 import { Invocation } from '../lib/models/invocation.model'
+import InvocationStatus from './InvocationStatus'
 import { ChevronRightIcon } from '@heroicons/react/20/solid'
 
 interface InvocationItemParams {
@@ -36,7 +37,10 @@ export default function InvocationItem({
           </span>
         )}
       </div>
-
+      <InvocationStatus
+        status={invocation.status}
+        showLabel={false}
+      ></InvocationStatus>
       <ChevronRightIcon className="h-6 w-6 ml-2 flex-none" />
     </div>
   )

@@ -1,6 +1,7 @@
-import { format } from 'date-fns'
 import Button from '../components/Button'
 import { Invocation } from '../lib/models/invocation.model'
+import InvocationStatus from './InvocationStatus'
+import { formatDate } from '../lib/utilities/date.lib'
 
 interface InvocationDetailParams {
   invocation: Invocation
@@ -41,7 +42,7 @@ interface HeaderParams {
 
 function Header({ invocation, onPlayFunction, onCloseFunction }: HeaderParams) {
   const updatedAt = invocation.updatedAt
-    ? format(new Date(invocation.updatedAt), 'dd MMM yy, HH:mm:SS')
+    ? formatDate(invocation.updatedAt)
     : undefined
 
   return (
@@ -53,16 +54,17 @@ function Header({ invocation, onPlayFunction, onCloseFunction }: HeaderParams) {
         >
           {invocation.functionName}
         </h1>
+        <p className="text-gray-400 text-sm">
+          <strong>ID</strong> {invocation._id}
+        </p>
         {updatedAt && (
-          <p className="text-gray-400">
-            <strong>LAST UPDATE</strong> {updatedAt}
+          <p className="text-gray-400 text-sm">
+            <strong>UPDATED AT</strong> {updatedAt}
           </p>
         )}
       </div>
-      <div className="flex justify-center items-center">
-        <div className="bg-slate-700 text-white uppercase rounded-md flex items-center justify-center px-2">
-          {invocation.status}
-        </div>
+      <div className="flex justify-center items-start">
+        <InvocationStatus status={invocation.status}></InvocationStatus>
         <Button
           className="ml-10"
           style="outline"
@@ -89,18 +91,36 @@ interface ContentParams {
 function Content({ invocation }: ContentParams) {
   return (
     <div className="p-8 h-full">
-      <p className="text-gray-400">
-        <strong>ID</strong> {invocation._id}
-      </p>
-      <p className="text-gray-400">
-        <strong>RESULT</strong> -
-      </p>
-      <p className="text-gray-400">
-        <strong>REASON</strong> -
-      </p>
-      <p className="text-gray-400">
-        <strong>PHASES</strong> -
-      </p>
+      <div>
+        <p className="text-gray-400 text-sm">
+          <strong>PHASES</strong>
+        </p>
+        <ul
+          role="list"
+          className="marker:text-yellow-800 list-none space-y-1 text-slate-400"
+        >
+          {invocation.phases.map((phase) => (
+            <li className="flex items-center p-1" key={phase.status}>
+              <InvocationStatus
+                status={phase.status}
+                showLabel={false}
+              ></InvocationStatus>
+              <span className="text-sm ml-2">{formatDate(phase.date)}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {invocation.reason && (
+        <div className="mt-5">
+          <p className="text-gray-400 text-sm">
+            <strong>REASON</strong>
+          </p>
+          <div className="bg-slate-800 text-white text-xs p-3">
+            <pre>{JSON.stringify(invocation.reason, null, 2)}</pre>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

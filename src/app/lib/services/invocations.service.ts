@@ -1,4 +1,4 @@
-import { Invocation } from '../models/invocation.model'
+import { Invocation, InvocationSearchParams } from '../models/invocation.model'
 import { deleteData, getData } from '../utilities/http.lib'
 
 const API_MODEL = 'invocations'
@@ -40,4 +40,15 @@ export function deleteInvocation(key: string): Promise<void> {
  */
 export function downloadInvocationPayload(key: string): Promise<string> {
   return getData(`${API_VERSION}/${API_MODEL}/${key}/payload`)
+}
+
+/**
+ * Search invocations
+ * @param params - the search params
+ * @returns the Promise<Fn[]> for search functions
+ */
+export function searchInvocations(
+  params?: InvocationSearchParams
+): Promise<{ continue: string; invocations: Invocation[] }> {
+  return getData(`${API_VERSION}/${API_MODEL}`, params)
 }

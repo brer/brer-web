@@ -20,4 +20,12 @@ export interface FnEnv {
   value: string
 }
 
+export interface FnSearchParams {
+  name?: string
+  continue?: string
+  direction?: 'asc' | 'desc'
+  limit?: number
+  sort?: 'createdAt' | 'name'
+}
+
 export type FnUpdateBody = Pick<Fn, 'image' | 'env'>
