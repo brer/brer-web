@@ -116,7 +116,7 @@ function Content({ invocation }: ContentParams) {
           <p className="text-gray-400 text-sm">
             <strong>REASON</strong>
           </p>
-          <div className="bg-slate-800 text-white text-xs p-3">
+          <div className="bg-slate-800 text-white text-xs p-3 overflow-auto">
             <pre>{JSON.stringify(invocation.reason, null, 2)}</pre>
           </div>
         </div>
@@ -139,10 +139,10 @@ function Footer({ onPayloadFunction, onLogFunction }: FooterParams) {
         size="m"
         onClick={onPayloadFunction}
       >
-        Show payload
+        Download payload
       </Button>
       <Button style="outline" size="m" onClick={onLogFunction}>
-        Show payload
+        Show logs
       </Button>
     </div>
   )

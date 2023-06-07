@@ -149,6 +149,7 @@ function Header({
             onClick={() => onToggleEnvFunction(!showEnvs)}
             icon="adjustments"
             title={showEnvs ? 'Hide ENVs' : 'Show ENVs'}
+            disabled={!fn.env || !fn.env.length}
           ></Button>
           <Button
             className="ml-2"
@@ -259,7 +260,7 @@ function FunctionInvocations({
           onSelectFunction={onSelectInvocation}
         ></InvocationsList>
       </div>
-      <div className="w-full">
+      <div className="w-full overflow-hidden">
         {currentInvocation ? (
           <InvocationDetail
             invocation={currentInvocation}

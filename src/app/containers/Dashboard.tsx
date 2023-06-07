@@ -76,7 +76,7 @@ export default function Dashboard() {
           onSelectFunction={handleSelectFunction}
         ></FunctionsList>
       </div>
-      <div className="w-full">
+      <div className="w-full overflow-hidden">
         {currentFunction ? (
           <FunctionDetail
             fn={currentFunction}
