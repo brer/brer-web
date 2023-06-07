@@ -1,7 +1,7 @@
 import Button from '../components/Button'
 import { Invocation } from '../lib/models/invocation.model'
 import InvocationStatus from './InvocationStatus'
-import { formatDate } from '../lib/utilities/date.lib'
+import { formatDate } from '../lib/libs/date.lib'
 
 interface InvocationDetailParams {
   invocation: Invocation

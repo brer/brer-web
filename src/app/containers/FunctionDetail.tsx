@@ -20,7 +20,7 @@ import {
   readInvocationLogs,
   searchInvocations,
 } from '../lib/services/invocations.service'
-import { formatDate } from '../lib/utilities/date.lib'
+import { formatDate } from '../lib/libs/date.lib'
 import { ModalParams } from '../components/Modal'
 import InvocationLogs from './InvocationLogs'
 

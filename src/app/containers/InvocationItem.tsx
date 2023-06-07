@@ -1,5 +1,5 @@
 import { Invocation } from '../lib/models/invocation.model'
-import { formatDate } from '../lib/utilities/date.lib'
+import { formatDate } from '../lib/libs/date.lib'
 import InvocationStatus from './InvocationStatus'
 import { ChevronRightIcon } from '@heroicons/react/20/solid'
 

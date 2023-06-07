@@ -1,10 +1,5 @@
 import { Invocation, InvocationSearchParams } from '../models/invocation.model'
-import {
-  deleteData,
-  downloadData,
-  getData,
-  plainData,
-} from '../utilities/http.lib'
+import { deleteData, downloadData, getData, plainData } from '../libs/http.lib'
 
 const API_MODEL = 'invocations'
 const API_VERSION = 'v1'

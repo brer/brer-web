@@ -28,4 +28,5 @@ export interface FnSearchParams {
   sort?: 'createdAt' | 'name'
 }
 
+export type FnCreateBody = Pick<Fn, 'name' | 'image' | 'env'>
 export type FnUpdateBody = Pick<Fn, 'image' | 'env'>

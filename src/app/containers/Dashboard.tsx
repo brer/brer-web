@@ -3,7 +3,10 @@ import { useEffect, useState } from 'react'
 import { CubeIcon } from '@heroicons/react/20/solid'
 
 import { Fn, FnSearchParams } from '../lib/models/function.model'
-import { searchFunctions } from '../lib/services/functions.service'
+import {
+  createFunction,
+  searchFunctions,
+} from '../lib/services/functions.service'
 
 import Logo from '../components/Logo'
 import Button from '../components/Button'
@@ -11,34 +14,74 @@ import Input from '../components/Input'
 import FunctionsList from './FunctionsList'
 import FunctionDetail from './FunctionDetail'
 import { ModalParams } from '../components/Modal'
+import FunctionForm from './FunctionForm'
 
 interface DashboardParams {
   onModalShow: (modalParams: ModalParams) => void
+  onModalHide: () => void
 }
 
-export default function Dashboard({ onModalShow }: DashboardParams) {
+export default function Dashboard({
+  onModalShow,
+  onModalHide,
+}: DashboardParams) {
   // Models
   const [searchName, setSearchName] = useState<string | undefined>()
   const [functions, setFunctions] = useState<Fn[] | undefined>()
+  const [editFunction, setEditFunction] = useState<Partial<Fn>>({})
   const [currentFunction, setCurrentFunction] = useState<Fn | undefined>()
   const [continueString, setContinueString] = useState<string | undefined>()
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
 
   // Handlers
-  const searchFns = () => {
+  const searchFns = (loadMore = false) => {
     setIsLoading(true)
     setIsError(false)
-    searchFunctions(parseSearchParams())
+    searchFunctions(parseSearchParams(loadMore))
       .then((fns) => {
         setContinueString(fns.continue)
-        setFunctions(fns.functions)
+        setFunctions([...(functions || []), ...fns.functions])
       })
       .catch((err) => setIsError(true))
       .finally(() => setIsLoading(false))
   }
+  const createFn = () => {
+    if (!editFunction.name || !editFunction.image) {
+      return
+    }
+
+    onModalHide()
+    setIsLoading(true)
+    createFunction({
+      name: editFunction.name,
+      image: editFunction.image,
+      env: editFunction.env || [],
+    })
+      .then((fn) => searchFns(true))
+      .finally(() => setIsLoading(false))
+  }
   const handleCreateFunction = () => {
-    onModalShow({ title: 'New function' })
+    setEditFunction({})
+    onModalShow({
+      title: 'New function',
+      children: FunctionForm({
+        fn: editFunction,
+        showName: true,
+        onFnChange: (fn) => setEditFunction(fn),
+        onFieldChange: (field, value) => {
+          editFunction[field] = value
+          setEditFunction(editFunction)
+        },
+      }),
+      actions: [
+        {
+          label: 'Save',
+          actionId: 'save',
+          callback: (actionId) => createFn(),
+        },
+      ],
+    })
   }
   const handleSearchFunctions = (text: string | undefined) => {
     setSearchName(text)
@@ -50,14 +93,14 @@ export default function Dashboard({ onModalShow }: DashboardParams) {
   useEffect(() => searchFns(), [])
 
   // Utilities
-  const parseSearchParams = () => {
+  const parseSearchParams = (loadMore: boolean) => {
     const params: FnSearchParams = {}
 
     if (searchName) {
       params.name = searchName
     }
 
-    if (continueString) {
+    if (loadMore && continueString) {
       params.continue = continueString
     }
 
@@ -78,7 +121,9 @@ export default function Dashboard({ onModalShow }: DashboardParams) {
           isLoading={isLoading}
           isError={isError}
           currentId={currentFunction?._id}
+          showLoadMore={!!continueString}
           onSelectFunction={handleSelectFunction}
+          onLoadMoreFunction={() => searchFns(true)}
         ></FunctionsList>
       </div>
       <div className="w-full overflow-hidden">
@@ -117,7 +162,6 @@ function Header({ onCreateFunction, onSearchFunctions }: HeaderParams) {
         <Input
           placeholder="Search functions"
           icon="lens"
-          value=""
           onChange={onSearchFunctions}
         ></Input>
       </div>

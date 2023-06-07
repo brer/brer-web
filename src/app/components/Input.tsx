@@ -3,8 +3,8 @@ import { useState } from 'react'
 
 interface InputParams {
   placeholder: string
-  onChange: (text: string) => void
-  value: string
+  onChange: (text: string | undefined) => void
+  value?: string
   icon?: 'lens'
 }
 
@@ -17,13 +17,17 @@ export default function Input({
   const [editableText, setEditableText] = useState(value)
 
   // Classes
-  const inputClasses =
-    'border border-black-300 text-gray-900 text-sm rounded-lg focus:border-black-800 block w-full p-2.5 pl-12'
+  let inputClasses =
+    'appearance-none border border-black-300 text-gray-900 text-sm rounded-lg focus:border-yellow-700 focus-visible:border-yellow-700 block w-full p-2.5'
+
+  if (!!icon) {
+    inputClasses += ' pl-12'
+  }
 
   // Icon
-  let iconWrapperClasses =
+  const iconWrapperClasses =
     'pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3'
-  let inputIcon =
+  const inputIcon =
     icon === 'lens' ? (
       <div className={iconWrapperClasses}>
         <MagnifyingGlassIcon className="h-6" />
@@ -46,7 +50,7 @@ export default function Input({
         type="text"
         className={inputClasses}
         placeholder={placeholder}
-        value={editableText}
+        value={editableText || ''}
         onChange={(event) => setEditableText(event.target.value)}
         onBlur={() => onChange(editableText)}
         onKeyDown={handleKeyEvent}

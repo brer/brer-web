@@ -58,8 +58,10 @@ export default function Button({
     btnClasses += ' text-sm rounded h-6'
   } else if (size === 'm') {
     btnClasses += ' text-m rounded-md h-8'
+  } else if (size === 'l') {
+    btnClasses += ' text-l px-4 rounded-lg h-10'
   } else if (size === 'xl') {
-    btnClasses += ' text-m rounded-lg h-12'
+    btnClasses += ' text-xl px-4 rounded-lg h-12'
   }
 
   // Icon

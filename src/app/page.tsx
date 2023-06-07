@@ -14,7 +14,10 @@ export default function Home() {
 
   return (
     <main className="h-screen w-screen p-16 flex">
-      <Dashboard onModalShow={handleModalFunction}></Dashboard>
+      <Dashboard
+        onModalShow={handleModalFunction}
+        onModalHide={() => setModal(undefined)}
+      ></Dashboard>
       {modal && (
         <Modal
           title={modal.title}

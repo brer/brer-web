@@ -1,5 +1,10 @@
-import { Fn, FnSearchParams, FnUpdateBody } from '../models/function.model'
-import { postData, getData, putData } from '../utilities/http.lib'
+import {
+  Fn,
+  FnCreateBody,
+  FnSearchParams,
+  FnUpdateBody,
+} from '../models/function.model'
+import { postData, getData, putData } from '../libs/http.lib'
 import { Invocation } from '../models/invocation.model'
 
 const API_MODEL = 'functions'
@@ -10,7 +15,7 @@ const API_VERSION = 'v1'
  * @param fn - the function params
  * @returns the Promise<{ Fn }> for create a new function
  */
-export function createFunction(fn: Fn): Promise<{ function: Fn }> {
+export function createFunction(fn: FnCreateBody): Promise<{ function: Fn }> {
   return postData(`${API_VERSION}/${API_MODEL}`, fn)
 }
 
