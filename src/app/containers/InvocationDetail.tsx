@@ -6,7 +6,6 @@ import { formatDate } from '../lib/libs/date.lib'
 interface InvocationDetailParams {
   invocation: Invocation
   isLoading: boolean
-  onPlayFunction: () => void
   onCloseFunction: () => void
   onPayloadFunction: () => void
   onLogFunction: () => void
@@ -15,7 +14,6 @@ interface InvocationDetailParams {
 export default function InvocationDetail({
   invocation,
   isLoading,
-  onPlayFunction,
   onCloseFunction,
   onLogFunction,
   onPayloadFunction,
@@ -25,7 +23,6 @@ export default function InvocationDetail({
       <Header
         invocation={invocation}
         isLoading={isLoading}
-        onPlayFunction={onPlayFunction}
         onCloseFunction={onCloseFunction}
       ></Header>
       <Content invocation={invocation}></Content>
@@ -41,16 +38,10 @@ export default function InvocationDetail({
 interface HeaderParams {
   invocation: Invocation
   isLoading: boolean
-  onPlayFunction: () => void
   onCloseFunction: () => void
 }
 
-function Header({
-  invocation,
-  isLoading,
-  onPlayFunction,
-  onCloseFunction,
-}: HeaderParams) {
+function Header({ invocation, isLoading, onCloseFunction }: HeaderParams) {
   const updatedAt = invocation.updatedAt
     ? formatDate(invocation.updatedAt)
     : undefined
@@ -73,24 +64,23 @@ function Header({
           </p>
         )}
       </div>
-      <div className="flex justify-center items-start">
-        <InvocationStatus status={invocation.status}></InvocationStatus>
-        <Button
-          className="ml-10"
-          style="outline"
-          size="m"
-          onClick={onCloseFunction}
-          icon="x-mark"
-          disabled={isLoading}
-        ></Button>
-        <Button
-          className="ml-2"
-          style="solid"
-          size="m"
-          onClick={onPlayFunction}
-          icon="play"
-          disabled={isLoading}
-        ></Button>
+      <div className="flex justify-center items-start divide-x">
+        <div>
+          <InvocationStatus
+            className="mr-2"
+            status={invocation.status}
+          ></InvocationStatus>
+        </div>
+        <div>
+          <Button
+            className="ml-2"
+            style="outline"
+            size="m"
+            onClick={onCloseFunction}
+            icon="x-mark"
+            disabled={isLoading}
+          ></Button>
+        </div>
       </div>
     </div>
   )

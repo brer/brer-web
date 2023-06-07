@@ -2,14 +2,20 @@ import { InvocationStatus } from '../lib/models/invocation.model'
 
 interface InvocationStatusParams {
   status: InvocationStatus
+  className?: string
   showLabel?: boolean
 }
 
 export default function InvocationStatus({
   status,
+  className,
   showLabel = true,
 }: InvocationStatusParams) {
   let wrapperClasses = 'uppercase flex items-center justify-center'
+
+  if (className) {
+    wrapperClasses += ` ${className}`
+  }
 
   if (status === 'completed') {
     wrapperClasses += ' bg-green-500 text-white'

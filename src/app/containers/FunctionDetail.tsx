@@ -23,6 +23,7 @@ import {
 import { formatDate } from '../lib/libs/date.lib'
 import { ModalParams } from '../components/Modal'
 import InvocationLogs from './InvocationLogs'
+import { triggerFunction } from '../lib/services/functions.service'
 
 interface FunctionDetailParams {
   fn: Fn
@@ -42,7 +43,7 @@ export default function FunctionDetail({
   const [continueString, setContinueString] = useState<string | undefined>()
   const [showEnvs, setShowEnvs] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState(true)
-  const [isFunctionLoading, setisFunctionLoading] = useState(false)
+  const [isFunctionLoading, setIsFunctionLoading] = useState(false)
   const [isError, setIsError] = useState(false)
 
   // Handlers
@@ -66,10 +67,14 @@ export default function FunctionDetail({
     setCurrentInvocation(invocation)
   const handleUnselectInvocation = () => setCurrentInvocation(undefined)
   const handleToggleEnvs = (show: boolean) => setShowEnvs(show)
-  const handlePlayInvocation = (invocation: Invocation) =>
-    console.log(invocation)
+  const handlePlayInvocation = () => {
+    setIsFunctionLoading(true)
+    triggerFunction(fn.name)
+      .then(() => searchInvs())
+      .finally(() => setIsFunctionLoading(false))
+  }
   const handleLogInvocation = (invocation: Invocation) => {
-    setisFunctionLoading(true)
+    setIsFunctionLoading(true)
     readInvocationLogs(invocation._id!)
       .then((logs) =>
         onModalShow({
@@ -77,13 +82,13 @@ export default function FunctionDetail({
           children: InvocationLogs({ logs, invocation }),
         })
       )
-      .finally(() => setisFunctionLoading(false))
+      .finally(() => setIsFunctionLoading(false))
   }
   const handlePayloadInvocation = (invocation: Invocation) => {
-    setisFunctionLoading(true)
+    setIsFunctionLoading(true)
     downloadInvocationPayload(invocation._id!)
       .then((res) => saveAs(res, 'payload.json'))
-      .finally(() => setisFunctionLoading(false))
+      .finally(() => setIsFunctionLoading(false))
   }
 
   // Lifecycle
@@ -113,6 +118,7 @@ export default function FunctionDetail({
         fn={fn}
         isLoading={isFunctionLoading}
         showEnvs={showEnvs}
+        onPlayFunction={handlePlayInvocation}
         onCloseFunction={onCloseFunction}
         onToggleEnvFunction={handleToggleEnvs}
       ></Header>
@@ -123,7 +129,6 @@ export default function FunctionDetail({
         invocations={invocations}
         onSelectInvocation={handleSelectInvocation}
         onUnselectInvocation={handleUnselectInvocation}
-        onPlayInvocation={handlePlayInvocation}
         onLogInvocation={handleLogInvocation}
         onPayloadInvocation={handlePayloadInvocation}
         currentInvocation={currentInvocation}
@@ -136,6 +141,7 @@ interface HeaderParams {
   fn: Fn
   showEnvs: boolean
   isLoading: boolean
+  onPlayFunction: () => void
   onCloseFunction: () => void
   onToggleEnvFunction: (show: boolean) => void
 }
@@ -144,6 +150,7 @@ function Header({
   fn,
   showEnvs,
   isLoading,
+  onPlayFunction,
   onCloseFunction,
   onToggleEnvFunction,
 }: HeaderParams) {
@@ -152,7 +159,7 @@ function Header({
 
   return (
     <div className="border-b p-8">
-      <div className="flex justify-between">
+      <div className="flex justify-between items-start">
         <div>
           <h1
             className="text-2xl font-bold text-yellow-800 truncate whitespace-nowrap"
@@ -165,24 +172,36 @@ function Header({
           </p>
         </div>
         {!isLoading && (
-          <div className="flex">
-            <Button
-              className="ml-2"
-              style={showEnvs ? 'solid' : 'outline'}
-              size="m"
-              onClick={() => onToggleEnvFunction(!showEnvs)}
-              icon="adjustments"
-              title={showEnvs ? 'Hide ENVs' : 'Show ENVs'}
-              disabled={!fn.env || !fn.env.length}
-            ></Button>
-            <Button
-              className="ml-2"
-              style="outline"
-              size="m"
-              onClick={onCloseFunction}
-              icon="x-mark"
-              title="Close function"
-            ></Button>
+          <div className="flex divide-x">
+            <div>
+              <Button
+                className="mx-2"
+                style="solid"
+                size="m"
+                onClick={onPlayFunction}
+                icon="play"
+                title="Play function"
+              ></Button>
+            </div>
+            <div>
+              <Button
+                className="mx-2"
+                style={showEnvs ? 'solid' : 'outline'}
+                size="m"
+                onClick={() => onToggleEnvFunction(!showEnvs)}
+                icon="adjustments"
+                title={showEnvs ? 'Hide ENVs' : 'Show ENVs'}
+                disabled={!fn.env || !fn.env.length}
+              ></Button>
+              <Button
+                className="ml-1"
+                style="outline"
+                size="m"
+                onClick={onCloseFunction}
+                icon="x-mark"
+                title="Close function"
+              ></Button>
+            </div>
           </div>
         )}
         {isLoading && <ArrowPathIcon className="h-6 animate-spin" />}
@@ -226,7 +245,6 @@ interface FunctionInvocationsParams {
   isFunctionLoading: boolean
   isError: boolean
   currentInvocation?: Invocation
-  onPlayInvocation: (Invocation: Invocation) => void
   onSelectInvocation: (invocation: Invocation) => void
   onLogInvocation: (invocation: Invocation) => void
   onPayloadInvocation: (invocation: Invocation) => void
@@ -239,7 +257,6 @@ function FunctionInvocations({
   isFunctionLoading,
   isError,
   currentInvocation,
-  onPlayInvocation,
   onSelectInvocation,
   onLogInvocation,
   onPayloadInvocation,
@@ -293,7 +310,6 @@ function FunctionInvocations({
           <InvocationDetail
             invocation={currentInvocation}
             isLoading={isFunctionLoading}
-            onPlayFunction={() => onPlayInvocation(currentInvocation)}
             onCloseFunction={onUnselectInvocation}
             onPayloadFunction={() => onPayloadInvocation(currentInvocation)}
             onLogFunction={() => onLogInvocation(currentInvocation)}
