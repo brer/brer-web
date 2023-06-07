@@ -1,6 +1,5 @@
-import { format } from 'date-fns'
-
 import { Invocation } from '../lib/models/invocation.model'
+import { formatDate } from '../lib/utilities/date.lib'
 import InvocationStatus from './InvocationStatus'
 import { ChevronRightIcon } from '@heroicons/react/20/solid'
 
@@ -18,7 +17,7 @@ export default function InvocationItem({
   let itemClasses =
     'p-3 border-b cursor-pointer flex flex-nowrap items-center justify-between'
   const updatedAt = invocation.updatedAt
-    ? format(new Date(invocation.updatedAt), 'dd MMM yy, HH:mm:SS')
+    ? formatDate(invocation.updatedAt)
     : undefined
 
   if (isActive) {

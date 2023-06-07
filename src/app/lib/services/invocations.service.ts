@@ -1,5 +1,10 @@
 import { Invocation, InvocationSearchParams } from '../models/invocation.model'
-import { deleteData, getData } from '../utilities/http.lib'
+import {
+  deleteData,
+  downloadData,
+  getData,
+  plainData,
+} from '../utilities/http.lib'
 
 const API_MODEL = 'invocations'
 const API_VERSION = 'v1'
@@ -21,7 +26,7 @@ export function readInvocation(
  * @returns the Promise<string> for load invocation logs
  */
 export function readInvocationLogs(key: string): Promise<string> {
-  return getData(`${API_VERSION}/${API_MODEL}/${key}/logs`)
+  return plainData(`${API_VERSION}/${API_MODEL}/${key}/logs`)
 }
 
 /**
@@ -38,8 +43,8 @@ export function deleteInvocation(key: string): Promise<void> {
  * @param key - the invocation key
  * @returns the Promise<string> for get invocation payload
  */
-export function downloadInvocationPayload(key: string): Promise<string> {
-  return getData(`${API_VERSION}/${API_MODEL}/${key}/payload`)
+export function downloadInvocationPayload(key: string): Promise<Blob> {
+  return downloadData(`${API_VERSION}/${API_MODEL}/${key}/payload`)
 }
 
 /**

@@ -29,7 +29,7 @@ export default function FunctionsList({
   if (isLoading) {
     return (
       <div className={wrapperClasses}>
-        <ArrowPathIcon className="h-24" />
+        <ArrowPathIcon className="h-24 animate-spin" />
         <h2>Loading...</h2>
       </div>
     )

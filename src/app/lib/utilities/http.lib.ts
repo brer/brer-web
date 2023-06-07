@@ -85,3 +85,23 @@ export async function deleteData<T>(api: string, body = {}): Promise<T> {
   const response = await fetchData('DELETE', api, body)
   return response.json()
 }
+
+/**
+ * Download data from server
+ * @param api - the api to call
+ * @returns the Promise<Blob> to download the data
+ */
+export async function downloadData(api: string): Promise<Blob> {
+  const response = await fetchData('GET', api)
+  return response.blob()
+}
+
+/**
+ * Read data from server
+ * @param api - the api to call
+ * @returns the Promise<string> to read the data
+ */
+export async function plainData(api: string): Promise<string> {
+  const response = await fetchData('GET', api)
+  return response.text()
+}

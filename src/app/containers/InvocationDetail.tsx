@@ -5,6 +5,7 @@ import { formatDate } from '../lib/utilities/date.lib'
 
 interface InvocationDetailParams {
   invocation: Invocation
+  isLoading: boolean
   onPlayFunction: () => void
   onCloseFunction: () => void
   onPayloadFunction: () => void
@@ -13,6 +14,7 @@ interface InvocationDetailParams {
 
 export default function InvocationDetail({
   invocation,
+  isLoading,
   onPlayFunction,
   onCloseFunction,
   onLogFunction,
@@ -22,11 +24,13 @@ export default function InvocationDetail({
     <div className="flex flex-col h-full">
       <Header
         invocation={invocation}
+        isLoading={isLoading}
         onPlayFunction={onPlayFunction}
         onCloseFunction={onCloseFunction}
       ></Header>
       <Content invocation={invocation}></Content>
       <Footer
+        isLoading={isLoading}
         onLogFunction={onLogFunction}
         onPayloadFunction={onPayloadFunction}
       ></Footer>
@@ -36,11 +40,17 @@ export default function InvocationDetail({
 
 interface HeaderParams {
   invocation: Invocation
+  isLoading: boolean
   onPlayFunction: () => void
   onCloseFunction: () => void
 }
 
-function Header({ invocation, onPlayFunction, onCloseFunction }: HeaderParams) {
+function Header({
+  invocation,
+  isLoading,
+  onPlayFunction,
+  onCloseFunction,
+}: HeaderParams) {
   const updatedAt = invocation.updatedAt
     ? formatDate(invocation.updatedAt)
     : undefined
@@ -71,6 +81,7 @@ function Header({ invocation, onPlayFunction, onCloseFunction }: HeaderParams) {
           size="m"
           onClick={onCloseFunction}
           icon="x-mark"
+          disabled={isLoading}
         ></Button>
         <Button
           className="ml-2"
@@ -78,6 +89,7 @@ function Header({ invocation, onPlayFunction, onCloseFunction }: HeaderParams) {
           size="m"
           onClick={onPlayFunction}
           icon="play"
+          disabled={isLoading}
         ></Button>
       </div>
     </div>
@@ -126,11 +138,12 @@ function Content({ invocation }: ContentParams) {
 }
 
 interface FooterParams {
+  isLoading: boolean
   onPayloadFunction: () => void
   onLogFunction: () => void
 }
 
-function Footer({ onPayloadFunction, onLogFunction }: FooterParams) {
+function Footer({ isLoading, onPayloadFunction, onLogFunction }: FooterParams) {
   return (
     <div className="pb-8 px-8 flex justify-center align-center">
       <Button
@@ -138,10 +151,16 @@ function Footer({ onPayloadFunction, onLogFunction }: FooterParams) {
         style="outline"
         size="m"
         onClick={onPayloadFunction}
+        disabled={isLoading}
       >
         Download payload
       </Button>
-      <Button style="outline" size="m" onClick={onLogFunction}>
+      <Button
+        style="outline"
+        size="m"
+        onClick={onLogFunction}
+        disabled={isLoading}
+      >
         Show logs
       </Button>
     </div>

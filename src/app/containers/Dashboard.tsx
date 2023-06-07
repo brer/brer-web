@@ -10,8 +10,13 @@ import Button from '../components/Button'
 import Input from '../components/Input'
 import FunctionsList from './FunctionsList'
 import FunctionDetail from './FunctionDetail'
+import { ModalParams } from '../components/Modal'
 
-export default function Dashboard() {
+interface DashboardParams {
+  onModalShow: (modalParams: ModalParams) => void
+}
+
+export default function Dashboard({ onModalShow }: DashboardParams) {
   // Models
   const [searchName, setSearchName] = useState<string | undefined>()
   const [functions, setFunctions] = useState<Fn[] | undefined>()
@@ -33,7 +38,7 @@ export default function Dashboard() {
       .finally(() => setIsLoading(false))
   }
   const handleCreateFunction = () => {
-    console.log('create function')
+    onModalShow({ title: 'New function' })
   }
   const handleSearchFunctions = (text: string | undefined) => {
     setSearchName(text)
@@ -80,6 +85,7 @@ export default function Dashboard() {
         {currentFunction ? (
           <FunctionDetail
             fn={currentFunction}
+            onModalShow={onModalShow}
             onCloseFunction={handleUnselectFunction}
           ></FunctionDetail>
         ) : (

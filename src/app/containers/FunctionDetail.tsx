@@ -1,4 +1,3 @@
-import { format } from 'date-fns'
 import { useEffect, useState } from 'react'
 import {
   ArrowPathIcon,
@@ -6,6 +5,7 @@ import {
   ExclamationCircleIcon,
   InboxIcon,
 } from '@heroicons/react/20/solid'
+import { saveAs } from 'file-saver'
 
 import { Fn } from '../lib/models/function.model'
 import Button from '../components/Button'
@@ -15,16 +15,25 @@ import {
   Invocation,
   InvocationSearchParams,
 } from '../lib/models/invocation.model'
-import { searchInvocations } from '../lib/services/invocations.service'
+import {
+  downloadInvocationPayload,
+  readInvocationLogs,
+  searchInvocations,
+} from '../lib/services/invocations.service'
+import { formatDate } from '../lib/utilities/date.lib'
+import { ModalParams } from '../components/Modal'
+import InvocationLogs from './InvocationLogs'
 
 interface FunctionDetailParams {
   fn: Fn
   onCloseFunction: () => void
+  onModalShow: (modalParams: ModalParams) => void
 }
 
 export default function FunctionDetail({
   fn,
   onCloseFunction,
+  onModalShow,
 }: FunctionDetailParams) {
   const [invocations, setInvocations] = useState<Invocation[] | undefined>()
   const [currentInvocation, setCurrentInvocation] = useState<
@@ -33,6 +42,7 @@ export default function FunctionDetail({
   const [continueString, setContinueString] = useState<string | undefined>()
   const [showEnvs, setShowEnvs] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [isFunctionLoading, setisFunctionLoading] = useState(false)
   const [isError, setIsError] = useState(false)
 
   // Handlers
@@ -58,10 +68,23 @@ export default function FunctionDetail({
   const handleToggleEnvs = (show: boolean) => setShowEnvs(show)
   const handlePlayInvocation = (invocation: Invocation) =>
     console.log(invocation)
-  const handleLogInvocation = (invocation: Invocation) =>
-    console.log(invocation)
-  const handlePayloadInvocation = (invocation: Invocation) =>
-    console.log(invocation)
+  const handleLogInvocation = (invocation: Invocation) => {
+    setisFunctionLoading(true)
+    readInvocationLogs(invocation._id!)
+      .then((logs) =>
+        onModalShow({
+          title: `Log ${invocation.functionName}`,
+          children: InvocationLogs({ logs, invocation }),
+        })
+      )
+      .finally(() => setisFunctionLoading(false))
+  }
+  const handlePayloadInvocation = (invocation: Invocation) => {
+    setisFunctionLoading(true)
+    downloadInvocationPayload(invocation._id!)
+      .then((res) => saveAs(res, 'payload.json'))
+      .finally(() => setisFunctionLoading(false))
+  }
 
   // Lifecycle
   useEffect(() => searchInvs(), [fn.name])
@@ -88,12 +111,14 @@ export default function FunctionDetail({
     <div className="flex flex-col h-full w-full">
       <Header
         fn={fn}
+        isLoading={isFunctionLoading}
         showEnvs={showEnvs}
         onCloseFunction={onCloseFunction}
         onToggleEnvFunction={handleToggleEnvs}
       ></Header>
       <FunctionInvocations
         isLoading={isLoading}
+        isFunctionLoading={isFunctionLoading}
         isError={isError}
         invocations={invocations}
         onSelectInvocation={handleSelectInvocation}
@@ -110,6 +135,7 @@ export default function FunctionDetail({
 interface HeaderParams {
   fn: Fn
   showEnvs: boolean
+  isLoading: boolean
   onCloseFunction: () => void
   onToggleEnvFunction: (show: boolean) => void
 }
@@ -117,15 +143,12 @@ interface HeaderParams {
 function Header({
   fn,
   showEnvs,
+  isLoading,
   onCloseFunction,
   onToggleEnvFunction,
 }: HeaderParams) {
-  const createdAt = fn.createdAt
-    ? format(new Date(fn.createdAt), 'dd MMM yy, HH:mm:SS')
-    : undefined
-  const updatedAt = fn.updatedAt
-    ? format(new Date(fn.updatedAt), 'dd MMM yy, HH:mm:SS')
-    : undefined
+  const createdAt = fn.createdAt ? formatDate(fn.createdAt) : undefined
+  const updatedAt = fn.updatedAt ? formatDate(fn.updatedAt) : undefined
 
   return (
     <div className="border-b p-8">
@@ -141,25 +164,28 @@ function Header({
             <strong>IMAGE</strong> {fn.image}
           </p>
         </div>
-        <div className="flex">
-          <Button
-            className="ml-2"
-            style={showEnvs ? 'solid' : 'outline'}
-            size="m"
-            onClick={() => onToggleEnvFunction(!showEnvs)}
-            icon="adjustments"
-            title={showEnvs ? 'Hide ENVs' : 'Show ENVs'}
-            disabled={!fn.env || !fn.env.length}
-          ></Button>
-          <Button
-            className="ml-2"
-            style="outline"
-            size="m"
-            onClick={onCloseFunction}
-            icon="x-mark"
-            title="Close function"
-          ></Button>
-        </div>
+        {!isLoading && (
+          <div className="flex">
+            <Button
+              className="ml-2"
+              style={showEnvs ? 'solid' : 'outline'}
+              size="m"
+              onClick={() => onToggleEnvFunction(!showEnvs)}
+              icon="adjustments"
+              title={showEnvs ? 'Hide ENVs' : 'Show ENVs'}
+              disabled={!fn.env || !fn.env.length}
+            ></Button>
+            <Button
+              className="ml-2"
+              style="outline"
+              size="m"
+              onClick={onCloseFunction}
+              icon="x-mark"
+              title="Close function"
+            ></Button>
+          </div>
+        )}
+        {isLoading && <ArrowPathIcon className="h-6 animate-spin" />}
       </div>
       {createdAt && (
         <p className="text-gray-400 text-sm">
@@ -197,6 +223,7 @@ function Header({
 interface FunctionInvocationsParams {
   invocations?: Invocation[]
   isLoading: boolean
+  isFunctionLoading: boolean
   isError: boolean
   currentInvocation?: Invocation
   onPlayInvocation: (Invocation: Invocation) => void
@@ -209,6 +236,7 @@ interface FunctionInvocationsParams {
 function FunctionInvocations({
   invocations,
   isLoading,
+  isFunctionLoading,
   isError,
   currentInvocation,
   onPlayInvocation,
@@ -225,7 +253,7 @@ function FunctionInvocations({
   if (isLoading) {
     return (
       <div className={wrapperClasses}>
-        <ArrowPathIcon className="h-24" />
+        <ArrowPathIcon className="h-24 animate-spin" />
         <h2>Loading...</h2>
       </div>
     )
@@ -264,6 +292,7 @@ function FunctionInvocations({
         {currentInvocation ? (
           <InvocationDetail
             invocation={currentInvocation}
+            isLoading={isFunctionLoading}
             onPlayFunction={() => onPlayInvocation(currentInvocation)}
             onCloseFunction={onUnselectInvocation}
             onPayloadFunction={() => onPayloadInvocation(currentInvocation)}

@@ -7,7 +7,7 @@ import {
 
 interface ButtonParams {
   size: 'xs' | 'sm' | 'm' | 'l' | 'xl'
-  style: 'solid' | 'outline'
+  style: 'solid' | 'outline' | 'link'
   onClick: () => void
   className?: string
   children?: React.ReactNode
@@ -42,6 +42,12 @@ export default function Button({
     btnClasses +=
       ' bg-white text-yellow-800 ' +
       ' border border-yellow-800' +
+      ' hover:bg-gray-200' +
+      ' active:bg-gray-300' +
+      ' active:ring-yellow-950' +
+      ' focus:ring-gray-400'
+  } else if (style === 'link') {
+    ' bg-white text-yellow-800 ' +
       ' hover:bg-gray-200' +
       ' active:bg-gray-300' +
       ' active:ring-yellow-950' +
