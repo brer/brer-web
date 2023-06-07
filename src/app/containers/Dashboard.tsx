@@ -142,7 +142,10 @@ function Header({ onCreateFunction, onSearchFunctions }: HeaderParams) {
             {
               label: 'Save',
               actionId: 'save',
-              callback: (actionId) => onCreateFunction(editFunction),
+              callback: (actionId) => {
+                onCreateFunction(editFunction)
+                setModal(false)
+              },
             },
           ]}
           onDismiss={() => setModal(false)}

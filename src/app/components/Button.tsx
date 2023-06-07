@@ -4,15 +4,16 @@ import {
   XMarkIcon,
   AdjustmentsHorizontalIcon,
   ArrowPathIcon,
+  MinusIcon,
 } from '@heroicons/react/20/solid'
 
 interface ButtonParams {
-  size: 'xs' | 'sm' | 'm' | 'l' | 'xl'
+  size: 'xs' | 's' | 'm' | 'l' | 'xl'
   style: 'solid' | 'outline' | 'link'
   onClick: () => void
   className?: string
   children?: React.ReactNode
-  icon?: 'plus' | 'x-mark' | 'play' | 'adjustments' | 'reload'
+  icon?: 'plus' | 'minus' | 'x-mark' | 'play' | 'adjustments' | 'reload'
   title?: string
   disabled?: boolean
 }
@@ -55,7 +56,7 @@ export default function Button({
       ' focus:ring-gray-400'
   }
 
-  if (size === 'sm') {
+  if (size === 's') {
     btnClasses += ' text-sm rounded h-6'
   } else if (size === 'm') {
     btnClasses += ' text-m rounded-md h-8'
@@ -71,6 +72,8 @@ export default function Button({
 
   if (icon === 'plus') {
     buttonIcon = <PlusIcon className={iconClasses} />
+  } else if (icon === 'minus') {
+    buttonIcon = <MinusIcon className={iconClasses} />
   } else if (icon === 'x-mark') {
     buttonIcon = <XMarkIcon className={iconClasses} />
   } else if (icon === 'play') {

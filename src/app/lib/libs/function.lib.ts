@@ -17,13 +17,13 @@ export function addFunctionEnv(fn: Partial<Fn>): Partial<Fn> {
  * @param fn - the function
  * @returns the function updated
  */
-export function removeFunctionEnv(fn: Partial<Fn>, env: FnEnv): Partial<Fn> {
+export function removeFunctionEnv(fn: Partial<Fn>, index: number): Partial<Fn> {
   if (!fn.env) {
     return fn
   }
 
   return {
     ...fn,
-    env: fn.env.filter((e) => e.name !== env.name),
+    env: fn.env.filter((e, i) => i !== index),
   }
 }
