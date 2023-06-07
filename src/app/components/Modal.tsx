@@ -1,10 +1,11 @@
 import Button from './Button'
 
-export interface ModalParams {
+interface ModalParams {
   title?: string
   actions?: ModalAction[]
   children?: React.ReactNode
   onDismiss?: () => void
+  isVisible?: boolean
 }
 
 interface ModalAction {
@@ -13,12 +14,26 @@ interface ModalAction {
   callback: (actionId: string) => void
 }
 
-export function Modal({ children, title, actions, onDismiss }: ModalParams) {
+export default function Modal({
+  children,
+  title,
+  actions,
+  onDismiss,
+  isVisible = false,
+}: ModalParams) {
+  let wrapperClasses =
+    'absolute z-50 h-screen w-screen p-4 overflow-x-hidden overflow-y-auto md:inset-0 bg-gray-700 bg-opacity-50'
+
+  if (!isVisible) {
+    wrapperClasses += ' hidden'
+  }
+
   return (
     <div
+      style={{ top: '-4rem', left: '-4rem' }}
       tabIndex={-1}
       aria-hidden="true"
-      className="fixed top-0 left-0 right-0 z-50 h-full w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 bg-gray-700 bg-opacity-50"
+      className={wrapperClasses}
     >
       <div className="relative m-auto max-w-2xl max-h-full bg-white rounded-lg shadow">
         {/* Header */}

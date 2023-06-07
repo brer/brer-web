@@ -3,6 +3,7 @@ import {
   PlusIcon,
   XMarkIcon,
   AdjustmentsHorizontalIcon,
+  ArrowPathIcon,
 } from '@heroicons/react/20/solid'
 
 interface ButtonParams {
@@ -11,7 +12,7 @@ interface ButtonParams {
   onClick: () => void
   className?: string
   children?: React.ReactNode
-  icon?: 'plus' | 'x-mark' | 'play' | 'adjustments'
+  icon?: 'plus' | 'x-mark' | 'play' | 'adjustments' | 'reload'
   title?: string
   disabled?: boolean
 }
@@ -76,6 +77,8 @@ export default function Button({
     buttonIcon = <PlayIcon className={iconClasses} />
   } else if (icon === 'adjustments') {
     buttonIcon = <AdjustmentsHorizontalIcon className={iconClasses} />
+  } else if (icon === 'reload') {
+    buttonIcon = <ArrowPathIcon className={iconClasses} />
   }
 
   return (
@@ -84,6 +87,7 @@ export default function Button({
       onClick={onClick}
       title={title}
       disabled={disabled}
+      type="button"
     >
       {buttonIcon}
       {children && <span className="whitespace-nowrap">{children}</span>}

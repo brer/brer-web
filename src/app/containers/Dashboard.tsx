@@ -13,22 +13,13 @@ import Button from '../components/Button'
 import Input from '../components/Input'
 import FunctionsList from './FunctionsList'
 import FunctionDetail from './FunctionDetail'
-import { ModalParams } from '../components/Modal'
+import Modal from '../components/Modal'
 import FunctionForm from './FunctionForm'
 
-interface DashboardParams {
-  onModalShow: (modalParams: ModalParams) => void
-  onModalHide: () => void
-}
-
-export default function Dashboard({
-  onModalShow,
-  onModalHide,
-}: DashboardParams) {
+export default function Dashboard() {
   // Models
   const [searchName, setSearchName] = useState<string | undefined>()
   const [functions, setFunctions] = useState<Fn[] | undefined>()
-  const [editFunction, setEditFunction] = useState<Partial<Fn>>({})
   const [currentFunction, setCurrentFunction] = useState<Fn | undefined>()
   const [continueString, setContinueString] = useState<string | undefined>()
   const [isLoading, setIsLoading] = useState(true)
@@ -46,42 +37,19 @@ export default function Dashboard({
       .catch((err) => setIsError(true))
       .finally(() => setIsLoading(false))
   }
-  const createFn = () => {
-    if (!editFunction.name || !editFunction.image) {
+  const createFn = (fn: Partial<Fn>) => {
+    if (!fn.name || !fn.image) {
       return
     }
 
-    onModalHide()
     setIsLoading(true)
     createFunction({
-      name: editFunction.name,
-      image: editFunction.image,
-      env: editFunction.env || [],
+      name: fn.name,
+      image: fn.image,
+      env: fn.env || [],
     })
       .then((fn) => searchFns(true))
       .finally(() => setIsLoading(false))
-  }
-  const handleCreateFunction = () => {
-    setEditFunction({})
-    onModalShow({
-      title: 'New function',
-      children: FunctionForm({
-        fn: editFunction,
-        showName: true,
-        onFnChange: (fn) => setEditFunction(fn),
-        onFieldChange: (field, value) => {
-          editFunction[field] = value
-          setEditFunction(editFunction)
-        },
-      }),
-      actions: [
-        {
-          label: 'Save',
-          actionId: 'save',
-          callback: (actionId) => createFn(),
-        },
-      ],
-    })
   }
   const handleSearchFunctions = (text: string | undefined) => {
     setSearchName(text)
@@ -108,10 +76,10 @@ export default function Dashboard({
   }
 
   return (
-    <div className="bg-white rounded-xl h-full w-full flex flex-row overflow-hidden drop-shadow-md hover:drop-shadow-2xl transition duration-150">
+    <div className="bg-white rounded-xl h-full w-full flex flex-row drop-shadow-md hover:drop-shadow-2xl transition duration-150">
       <div className="w-1/3 max-w-xs shadow-xl flex flex-col">
         <Header
-          onCreateFunction={handleCreateFunction}
+          onCreateFunction={createFn}
           onSearchFunctions={handleSearchFunctions}
         ></Header>
         <FunctionsList
@@ -121,7 +89,7 @@ export default function Dashboard({
           isLoading={isLoading}
           isError={isError}
           currentId={currentFunction?._id}
-          showLoadMore={!!continueString}
+          showLoadMore={!!continueString && !searchName}
           onSelectFunction={handleSelectFunction}
           onLoadMoreFunction={() => searchFns(true)}
         ></FunctionsList>
@@ -130,7 +98,6 @@ export default function Dashboard({
         {currentFunction ? (
           <FunctionDetail
             fn={currentFunction}
-            onModalShow={onModalShow}
             onCloseFunction={handleUnselectFunction}
           ></FunctionDetail>
         ) : (
@@ -145,18 +112,51 @@ export default function Dashboard({
 }
 
 interface HeaderParams {
-  onCreateFunction: () => void
+  onCreateFunction: (fn: Partial<Fn>) => void
   onSearchFunctions: (text: string | undefined) => void
 }
 
 function Header({ onCreateFunction, onSearchFunctions }: HeaderParams) {
+  const [modal, setModal] = useState(false)
+  const [editFunction, setEditFunction] = useState<Partial<Fn>>({})
+
   return (
     <div className="border-b">
       <div className="flex p-3 flex-row justify-between items-center">
         <Logo />
-        <Button size="m" style="solid" icon="plus" onClick={onCreateFunction}>
+        <Button
+          size="m"
+          style="solid"
+          icon="plus"
+          onClick={() => {
+            setEditFunction({})
+            setModal(true)
+          }}
+        >
           New function
         </Button>
+        <Modal
+          isVisible={modal}
+          title="New function"
+          actions={[
+            {
+              label: 'Save',
+              actionId: 'save',
+              callback: (actionId) => onCreateFunction(editFunction),
+            },
+          ]}
+          onDismiss={() => setModal(false)}
+        >
+          <FunctionForm
+            fn={editFunction}
+            showName={true}
+            onFnChange={setEditFunction}
+            onFieldChange={(field, value) => {
+              editFunction[field] = value
+              setEditFunction(editFunction)
+            }}
+          ></FunctionForm>
+        </Modal>
       </div>
       <div className="p-3">
         <Input

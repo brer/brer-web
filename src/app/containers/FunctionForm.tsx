@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import Input from '../components/Input'
 import { Fn } from '../lib/models/function.model'
+import Button from '../components/Button'
+import { addFunctionEnv } from '../lib/libs/function.lib'
 
 interface FunctionForm {
   fn: Partial<Fn>
@@ -13,6 +15,7 @@ export default function FunctionForm({
   fn,
   showName,
   onFieldChange,
+  onFnChange,
 }: FunctionForm) {
   return (
     <form className="w-full">
@@ -40,6 +43,23 @@ export default function FunctionForm({
             placeholder="Function image"
             onChange={(value) => onFieldChange('image', value)}
           ></Input>
+        </div>
+      </div>
+      <div className="flex">
+        <div className="w-full">
+          <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+            Env
+          </label>
+          {!fn.env?.length && (
+            <Button
+              className="block mx-auto"
+              style="outline"
+              size="m"
+              onClick={() => onFnChange(addFunctionEnv(fn))}
+            >
+              Add ENV
+            </Button>
+          )}
         </div>
       </div>
     </form>

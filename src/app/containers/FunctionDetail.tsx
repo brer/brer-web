@@ -21,20 +21,18 @@ import {
   searchInvocations,
 } from '../lib/services/invocations.service'
 import { formatDate } from '../lib/libs/date.lib'
-import { ModalParams } from '../components/Modal'
 import InvocationLogs from './InvocationLogs'
 import { triggerFunction } from '../lib/services/functions.service'
+import Modal from '../components/Modal'
 
 interface FunctionDetailParams {
   fn: Fn
   onCloseFunction: () => void
-  onModalShow: (modalParams: ModalParams) => void
 }
 
 export default function FunctionDetail({
   fn,
   onCloseFunction,
-  onModalShow,
 }: FunctionDetailParams) {
   const [invocations, setInvocations] = useState<Invocation[] | undefined>()
   const [currentInvocation, setCurrentInvocation] = useState<
@@ -42,12 +40,13 @@ export default function FunctionDetail({
   >()
   const [continueString, setContinueString] = useState<string | undefined>()
   const [showEnvs, setShowEnvs] = useState<boolean>(false)
+  const [invocationLogs, setInvocationLogs] = useState<string | undefined>()
   const [isLoading, setIsLoading] = useState(true)
   const [isFunctionLoading, setIsFunctionLoading] = useState(false)
   const [isError, setIsError] = useState(false)
 
   // Handlers
-  const searchInvs = () => {
+  const searchInvs = (loadMore = false) => {
     if (!fn._id) {
       return
     }
@@ -55,7 +54,7 @@ export default function FunctionDetail({
     setCurrentInvocation(undefined)
     setIsLoading(true)
     setIsError(false)
-    searchInvocations(parseSearchParams())
+    searchInvocations(parseSearchParams(loadMore))
       .then((invs) => {
         setInvocations(invs.invocations)
         setContinueString(invs.continue)
@@ -76,12 +75,7 @@ export default function FunctionDetail({
   const handleLogInvocation = (invocation: Invocation) => {
     setIsFunctionLoading(true)
     readInvocationLogs(invocation._id!)
-      .then((logs) =>
-        onModalShow({
-          title: `Log ${invocation.functionName}`,
-          children: InvocationLogs({ logs, invocation }),
-        })
-      )
+      .then((logs) => setInvocationLogs(logs))
       .finally(() => setIsFunctionLoading(false))
   }
   const handlePayloadInvocation = (invocation: Invocation) => {
@@ -95,7 +89,7 @@ export default function FunctionDetail({
   useEffect(() => searchInvs(), [fn.name])
 
   // Utilities
-  const parseSearchParams = () => {
+  const parseSearchParams = (loadMore: boolean) => {
     const params: InvocationSearchParams = {
       sort: 'createdAt',
       direction: 'desc',
@@ -105,7 +99,7 @@ export default function FunctionDetail({
       params.functionName = fn.name
     }
 
-    if (continueString) {
+    if (loadMore && continueString) {
       params.continue = continueString
     }
 
@@ -119,6 +113,7 @@ export default function FunctionDetail({
         isLoading={isFunctionLoading}
         showEnvs={showEnvs}
         onPlayFunction={handlePlayInvocation}
+        onReloadFunction={() => searchInvs()}
         onCloseFunction={onCloseFunction}
         onToggleEnvFunction={handleToggleEnvs}
       ></Header>
@@ -133,6 +128,18 @@ export default function FunctionDetail({
         onPayloadInvocation={handlePayloadInvocation}
         currentInvocation={currentInvocation}
       ></FunctionInvocations>
+      {currentInvocation && (
+        <Modal
+          title={`Log ${currentInvocation.functionName}`}
+          isVisible={!!invocationLogs}
+          onDismiss={() => setInvocationLogs(undefined)}
+        >
+          <InvocationLogs
+            invocation={currentInvocation}
+            logs={invocationLogs || ''}
+          ></InvocationLogs>
+        </Modal>
+      )}
     </div>
   )
 }
@@ -142,6 +149,7 @@ interface HeaderParams {
   showEnvs: boolean
   isLoading: boolean
   onPlayFunction: () => void
+  onReloadFunction: () => void
   onCloseFunction: () => void
   onToggleEnvFunction: (show: boolean) => void
 }
@@ -151,6 +159,7 @@ function Header({
   showEnvs,
   isLoading,
   onPlayFunction,
+  onReloadFunction,
   onCloseFunction,
   onToggleEnvFunction,
 }: HeaderParams) {
@@ -175,7 +184,7 @@ function Header({
           <div className="flex divide-x">
             <div>
               <Button
-                className="mx-2"
+                className="mr-2"
                 style="solid"
                 size="m"
                 onClick={onPlayFunction}
@@ -185,13 +194,21 @@ function Header({
             </div>
             <div>
               <Button
-                className="mx-2"
+                className="ml-2 mr-1"
                 style={showEnvs ? 'solid' : 'outline'}
                 size="m"
                 onClick={() => onToggleEnvFunction(!showEnvs)}
                 icon="adjustments"
                 title={showEnvs ? 'Hide ENVs' : 'Show ENVs'}
                 disabled={!fn.env || !fn.env.length}
+              ></Button>
+              <Button
+                className="mx-1"
+                style="outline"
+                size="m"
+                onClick={onReloadFunction}
+                icon="reload"
+                title="Reload invocations"
               ></Button>
               <Button
                 className="ml-1"
