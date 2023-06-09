@@ -2,6 +2,7 @@ import {
   Fn,
   FnCreateBody,
   FnSearchParams,
+  FnTriggerParams,
   FnUpdateBody,
 } from '../models/function.model'
 import { postData, getData, putData } from '../libs/http.lib'
@@ -47,9 +48,16 @@ export function updateFunction(
  * @returns the Promise<{ Fn, Invocation }> for trigger a function
  */
 export function triggerFunction(
-  key: string
+  key: string,
+  params: FnTriggerParams = {}
 ): Promise<{ function: Fn; invocation: Invocation }> {
-  return postData(`${API_VERSION}/${API_MODEL}/${key}/trigger`)
+  const env = params.env
+    ? params.env.reduce(
+        (acc, e) => ({ ...acc, [`x-brer-env-${e.name}`]: e.value }),
+        {}
+      )
+    : {}
+  return postData(`${API_VERSION}/${API_MODEL}/${key}`, params.body, env)
 }
 
 /**

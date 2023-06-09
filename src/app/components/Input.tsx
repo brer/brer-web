@@ -1,11 +1,11 @@
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface InputParams {
   placeholder: string
   onChange: (text: string | undefined) => void
   className?: string
-  value?: string
+  value: string
   icon?: 'lens'
 }
 
@@ -16,7 +16,10 @@ export default function Input({
   className,
   onChange,
 }: InputParams) {
-  const [editableText, setEditableText] = useState(value)
+  const [inputText, setInputText] = useState(value)
+
+  // Lifecycle
+  useEffect(() => setInputText(value), [value])
 
   // Classes
   let wrapperClasses = 'relative rounded-md'
@@ -58,9 +61,13 @@ export default function Input({
         type="text"
         className={inputClasses}
         placeholder={placeholder}
-        value={editableText || ''}
-        onChange={(event) => setEditableText(event.target.value)}
-        onBlur={() => onChange(editableText)}
+        value={inputText}
+        onChange={(event) => {
+          const newText = event.target.value
+          setInputText(newText)
+          onChange(newText)
+        }}
+        onBlur={() => onChange(inputText)}
         onKeyDown={handleKeyEvent}
       />
     </div>

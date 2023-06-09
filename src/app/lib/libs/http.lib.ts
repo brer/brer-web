@@ -9,7 +9,8 @@
 function fetchData(
   method: 'POST' | 'GET' | 'DELETE' | 'PUT' | 'PATCH',
   apiModel: string,
-  body?: any
+  body?: any,
+  headers?: any
 ): Promise<Response> {
   const API_URL = process.env.NEXT_PUBLIC_API_URL
   const TOKEN = process.env.NEXT_PUBLIC_TOKEN
@@ -23,6 +24,7 @@ function fetchData(
     headers: {
       Authorization: `Bearer ${TOKEN}`,
       'Content-Type': 'application/json',
+      ...(headers || {}),
     },
     body: body ? JSON.stringify(body) : undefined,
   })
@@ -34,8 +36,12 @@ function fetchData(
  * @param body - the body params to send
  * @returns the Promise<T> to make the request
  */
-export async function postData<T>(api: string, body = {}): Promise<T> {
-  const response = await fetchData('POST', api, body)
+export async function postData<T>(
+  api: string,
+  body = {},
+  headers = {}
+): Promise<T> {
+  const response = await fetchData('POST', api, body, headers)
   return response.json()
 }
 

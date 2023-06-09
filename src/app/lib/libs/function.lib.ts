@@ -1,15 +1,12 @@
-import { Fn, FnEnv } from '../models/function.model'
+import { FnEnv } from '../models/function.model'
 
 /**
  * Add ENV to a function
  * @param fn - the function
  * @returns the function updated
  */
-export function addFunctionEnv(fn: Partial<Fn>): Partial<Fn> {
-  return {
-    ...fn,
-    env: [...(fn.env || []), { name: '', value: '' }],
-  }
+export function addEnv(env?: FnEnv[]): FnEnv[] {
+  return [...(env || []), { name: '', value: '' }]
 }
 
 /**
@@ -17,13 +14,13 @@ export function addFunctionEnv(fn: Partial<Fn>): Partial<Fn> {
  * @param fn - the function
  * @returns the function updated
  */
-export function removeFunctionEnv(fn: Partial<Fn>, index: number): Partial<Fn> {
-  if (!fn.env) {
-    return fn
+export function removeEnv(
+  env: FnEnv[] | undefined,
+  index: number
+): FnEnv[] | undefined {
+  if (!env) {
+    return env
   }
 
-  return {
-    ...fn,
-    env: fn.env.filter((e, i) => i !== index),
-  }
+  return env.filter((e, i) => i !== index)
 }

@@ -7,7 +7,7 @@ import {
 } from '@heroicons/react/20/solid'
 import { saveAs } from 'file-saver'
 
-import { Fn } from '../lib/models/function.model'
+import { Fn, FnTriggerParams } from '../lib/models/function.model'
 import Button from '../components/Button'
 import InvocationsList from './InvocationsList'
 import InvocationDetail from './InvocationDetail'
@@ -24,6 +24,7 @@ import { formatDate } from '../lib/libs/date.lib'
 import InvocationLogs from './InvocationLogs'
 import { triggerFunction } from '../lib/services/functions.service'
 import Modal from '../components/Modal'
+import FunctionTrigger from './FunctionTrigger'
 
 interface FunctionDetailParams {
   fn: Fn
@@ -66,9 +67,9 @@ export default function FunctionDetail({
     setCurrentInvocation(invocation)
   const handleUnselectInvocation = () => setCurrentInvocation(undefined)
   const handleToggleEnvs = (show: boolean) => setShowEnvs(show)
-  const handlePlayInvocation = () => {
+  const handlePlayInvocation = (params: FnTriggerParams) => {
     setIsFunctionLoading(true)
-    triggerFunction(fn.name)
+    triggerFunction(fn.name, params)
       .then(() => searchInvs())
       .finally(() => setIsFunctionLoading(false))
   }
@@ -148,7 +149,7 @@ interface HeaderParams {
   fn: Fn
   showEnvs: boolean
   isLoading: boolean
-  onPlayFunction: () => void
+  onPlayFunction: (params: FnTriggerParams) => void
   onReloadFunction: () => void
   onCloseFunction: () => void
   onToggleEnvFunction: (show: boolean) => void
@@ -163,6 +164,8 @@ function Header({
   onCloseFunction,
   onToggleEnvFunction,
 }: HeaderParams) {
+  const [modal, setModal] = useState(false)
+  const [triggerParams, setTriggerParams] = useState<FnTriggerParams>({})
   const createdAt = fn.createdAt ? formatDate(fn.createdAt) : undefined
   const updatedAt = fn.updatedAt ? formatDate(fn.updatedAt) : undefined
 
@@ -187,7 +190,10 @@ function Header({
                 className="mr-2"
                 style="solid"
                 size="m"
-                onClick={onPlayFunction}
+                onClick={() => {
+                  setTriggerParams({})
+                  setModal(true)
+                }}
                 icon="play"
                 title="Play function"
               ></Button>
@@ -252,6 +258,26 @@ function Header({
           </table>
         </div>
       )}
+      <Modal
+        title={`Trigger ${fn.name}`}
+        isVisible={!!modal}
+        actions={[
+          {
+            label: 'Trigger function',
+            actionId: 'trigger',
+            callback: (actionId) => {
+              onPlayFunction(triggerParams)
+              setModal(false)
+            },
+          },
+        ]}
+        onDismiss={() => setModal(false)}
+      >
+        <FunctionTrigger
+          params={triggerParams}
+          onParamsChange={setTriggerParams}
+        ></FunctionTrigger>
+      </Modal>
     </div>
   )
 }

@@ -154,15 +154,12 @@ function Header({ onCreateFunction, onSearchFunctions }: HeaderParams) {
             fn={editFunction}
             showName={true}
             onFnChange={setEditFunction}
-            onFieldChange={(field, value) => {
-              editFunction[field] = value
-              setEditFunction(editFunction)
-            }}
           ></FunctionForm>
         </Modal>
       </div>
       <div className="p-3">
         <Input
+          value=""
           placeholder="Search functions"
           icon="lens"
           onChange={onSearchFunctions}
