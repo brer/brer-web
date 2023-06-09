@@ -1,6 +1,6 @@
 # BRER
 
-## Welcome to Brer front-end application [brer-frontend]
+## Welcome to Brer front-end application [brer-web]
 
 This repository contains the Brer front-end application and related libraries developed by the Evologi team.
 
