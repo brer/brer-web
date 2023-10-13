@@ -4,9 +4,13 @@ import { useEffect, useState } from 'react'
 interface InputParams {
   placeholder: string
   onChange: (text: string | undefined) => void
+  onSubmit?: (text: string | undefined) => void
   className?: string
   value: string
+  type?: 'text' | 'number' | 'password'
   icon?: 'lens'
+  disabled?: boolean
+  error?: boolean
 }
 
 export default function Input({
@@ -14,7 +18,11 @@ export default function Input({
   icon,
   value,
   className,
+  type = 'text',
   onChange,
+  onSubmit,
+  disabled,
+  error,
 }: InputParams) {
   const [inputText, setInputText] = useState(value)
 
@@ -33,6 +41,10 @@ export default function Input({
   const iconWrapperClasses =
     'pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3'
 
+  if (error) {
+    inputClasses += ' border-2 border-red-500'
+  }
+
   if (!!icon) {
     inputClasses += ' pl-12'
   }
@@ -49,8 +61,8 @@ export default function Input({
 
   // Handlers
   const handleKeyEvent = (event: any) => {
-    if (event.key === 'Enter') {
-      onChange(event.target.value)
+    if (event.key === 'Enter' && onSubmit) {
+      onSubmit(event.target.value)
     }
   }
 
@@ -58,7 +70,7 @@ export default function Input({
     <div className={wrapperClasses}>
       {inputIcon}
       <input
-        type="text"
+        type={type}
         className={inputClasses}
         placeholder={placeholder}
         value={inputText}
@@ -69,6 +81,7 @@ export default function Input({
         }}
         onBlur={() => onChange(inputText)}
         onKeyDown={handleKeyEvent}
+        disabled={disabled}
       />
     </div>
   )

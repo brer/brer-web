@@ -5,6 +5,7 @@ interface ModalParams {
   actions?: ModalAction[]
   children?: React.ReactNode
   onDismiss?: () => void
+  dismissable?: boolean
   isVisible?: boolean
 }
 
@@ -12,6 +13,7 @@ interface ModalAction {
   label: string
   actionId: string
   callback: (actionId: string) => void
+  disabled?: boolean
 }
 
 export default function Modal({
@@ -19,6 +21,7 @@ export default function Modal({
   title,
   actions,
   onDismiss,
+  dismissable = true,
   isVisible = false,
 }: ModalParams) {
   let wrapperClasses =
@@ -41,13 +44,15 @@ export default function Modal({
           {title && (
             <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
           )}
-          <Button
-            icon="x-mark"
-            style="link"
-            onClick={() => onDismiss && onDismiss()}
-            size="sm"
-            className="ml-auto inline-flex items-center"
-          ></Button>
+          {dismissable && (
+            <Button
+              icon="x-mark"
+              style="link"
+              onClick={() => onDismiss && onDismiss()}
+              size="s"
+              className="ml-auto inline-flex items-center"
+            ></Button>
+          )}
         </div>
 
         {/* Content */}
@@ -55,13 +60,14 @@ export default function Modal({
 
         {/* Footer */}
         {actions && (
-          <div className="flex items-center justify-end pb-6 px-6 space-x-2 rounded-b">
+          <div className="flex items-center justify-center pb-6 px-6 space-x-2 rounded-b">
             {actions.map((action) => (
               <Button
                 key={action.actionId}
                 size="l"
                 style="solid"
                 onClick={() => action.callback(action.actionId)}
+                disabled={action.disabled}
               >
                 {action.label}
               </Button>

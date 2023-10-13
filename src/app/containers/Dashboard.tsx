@@ -7,6 +7,7 @@ import {
   createFunction,
   searchFunctions,
 } from '../lib/services/functions.service'
+import { createSession, getSession } from '../lib/services/auth.service'
 
 import Logo from '../components/Logo'
 import Button from '../components/Button'
@@ -14,7 +15,9 @@ import Input from '../components/Input'
 import FunctionsList from './FunctionsList'
 import FunctionDetail from './FunctionDetail'
 import Modal from '../components/Modal'
+import AuthForm from './AuthForm'
 import FunctionForm from './FunctionForm'
+import { AuthParams } from '../lib/models/auth.model'
 
 export default function Dashboard() {
   // Models
@@ -22,10 +25,29 @@ export default function Dashboard() {
   const [functions, setFunctions] = useState<Fn[] | undefined>()
   const [currentFunction, setCurrentFunction] = useState<Fn | undefined>()
   const [continueString, setContinueString] = useState<string | undefined>()
+  const [authParams, setAuthParams] = useState<Partial<AuthParams>>({})
+  const [isAuthLoading, setIsAuthLoading] = useState(false)
+  const [isAuthError, setIsAuthError] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
+  const [authModal, setAuthModal] = useState(false)
 
   // Handlers
+  const initDashboard = () => {
+    setIsLoading(true)
+    getSession()
+      .then((session) => {
+        // Show auth modal if not authenticated
+        if (!session.authenticated) {
+          setAuthModal(true)
+        } else {
+          searchFns()
+        }
+      })
+      .catch((err) => setIsError(true))
+      .finally(() => setIsLoading(false))
+  }
+
   const searchFns = (loadMore = false) => {
     setIsLoading(true)
     setIsError(false)
@@ -49,8 +71,28 @@ export default function Dashboard() {
       env: fn.env || [],
     })
       .then((fn) => searchFns(true))
+      .catch((err) => setIsError(true))
       .finally(() => setIsLoading(false))
   }
+
+  const authenticate = async (authParams: Partial<AuthParams>) => {
+    if (!authParams.password || !authParams.username) {
+      return
+    }
+
+    setIsAuthLoading(true)
+    setIsAuthError(false)
+    createSession(authParams as AuthParams)
+      .then((session) => {
+        if (session.user) {
+          searchFns()
+          setAuthModal(false)
+        }
+      })
+      .catch((err) => setIsAuthError(true))
+      .finally(() => setIsAuthLoading(false))
+  }
+
   const handleSearchFunctions = (text: string | undefined) => {
     setSearchName(text)
   }
@@ -58,7 +100,7 @@ export default function Dashboard() {
   const handleUnselectFunction = () => setCurrentFunction(undefined)
 
   // Lifecycle
-  useEffect(() => searchFns(), [])
+  useEffect(() => initDashboard(), [])
 
   // Utilities
   const parseSearchParams = (loadMore: boolean) => {
@@ -107,6 +149,29 @@ export default function Dashboard() {
           </div>
         )}
       </div>
+      <Modal
+        isVisible={authModal}
+        dismissable={false}
+        actions={[
+          {
+            label: 'Authenticate',
+            actionId: 'authenticate',
+            callback: (actionId) => {
+              authenticate(authParams)
+            },
+            disabled: isAuthLoading,
+          },
+        ]}
+        onDismiss={() => setAuthModal(false)}
+      >
+        <AuthForm
+          authParams={authParams}
+          error={isAuthError}
+          disabled={isAuthLoading}
+          onAuthChange={setAuthParams}
+          onSubmit={() => authenticate(authParams)}
+        ></AuthForm>
+      </Modal>
     </div>
   )
 }

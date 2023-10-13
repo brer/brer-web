@@ -13,20 +13,25 @@ function fetchData(
   headers?: any
 ): Promise<Response> {
   const API_URL = process.env.NEXT_PUBLIC_API_URL
-  const TOKEN = process.env.NEXT_PUBLIC_TOKEN
 
-  if (!API_URL || !TOKEN) {
+  if (!API_URL) {
     throw new Error('Brer application not correctly configured')
   }
 
   return fetch(`/api/${apiModel}`, {
     method,
     headers: {
-      Authorization: `Bearer ${TOKEN}`,
+      Accept: 'application/json',
       'Content-Type': 'application/json',
       ...(headers || {}),
     },
     body: body ? JSON.stringify(body) : undefined,
+  }).then((response) => {
+    if (!response.ok) {
+      return Promise.reject(response)
+    }
+
+    return response
   })
 }
 
@@ -41,8 +46,9 @@ export async function postData<T>(
   body = {},
   headers = {}
 ): Promise<T> {
-  const response = await fetchData('POST', api, body, headers)
-  return response.json()
+  return fetchData('POST', api, body, headers).then((response) =>
+    response.json()
+  )
 }
 
 /**
@@ -52,8 +58,7 @@ export async function postData<T>(
  * @returns the Promise<T> to make the request
  */
 export async function putData<T>(api: string, body = {}): Promise<T> {
-  const response = await fetchData('PUT', api, body)
-  return response.json()
+  return fetchData('PUT', api, body).then((response) => response.json())
 }
 
 /**
@@ -66,8 +71,7 @@ export async function getData<T>(api: string, params?: any): Promise<T> {
     api += '?' + new URLSearchParams(params)
   }
 
-  const response = await fetchData('GET', api)
-  return response.json()
+  return fetchData('GET', api).then((response) => response.json())
 }
 
 /**
@@ -77,8 +81,7 @@ export async function getData<T>(api: string, params?: any): Promise<T> {
  * @returns the Promise<T> to make the request
  */
 export async function patchData<T>(api: string, body = {}): Promise<T> {
-  const response = await fetchData('PATCH', api, body)
-  return response.json()
+  return fetchData('PATCH', api, body).then((response) => response.json())
 }
 
 /**
@@ -88,8 +91,7 @@ export async function patchData<T>(api: string, body = {}): Promise<T> {
  * @returns the Promise<T> to make the request
  */
 export async function deleteData<T>(api: string, body = {}): Promise<T> {
-  const response = await fetchData('DELETE', api, body)
-  return response.json()
+  return fetchData('DELETE', api, body).then((response) => response.json())
 }
 
 /**
@@ -98,8 +100,7 @@ export async function deleteData<T>(api: string, body = {}): Promise<T> {
  * @returns the Promise<Blob> to download the data
  */
 export async function downloadData(api: string): Promise<Blob> {
-  const response = await fetchData('GET', api)
-  return response.blob()
+  return fetchData('GET', api).then((response) => response.blob())
 }
 
 /**
@@ -108,6 +109,5 @@ export async function downloadData(api: string): Promise<Blob> {
  * @returns the Promise<string> to read the data
  */
 export async function plainData(api: string): Promise<string> {
-  const response = await fetchData('GET', api)
-  return response.text()
+  return fetchData('GET', api).then((response) => response.text())
 }

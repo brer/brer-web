@@ -11,10 +11,9 @@ This repository contains the Brer front-end application and related libraries de
 It's necessary to create a `.env` file at the root of the project with two variables.<br>
 Without these variables the application <b>will not work properly</b>.
 
-| Name                | Description                                     |
-| ------------------- | ----------------------------------------------- |
-| NEXT_PUBLIC_API_URL | The public web url of Brer instance             |
-| NEXT_PUBLIC_TOKEN   | The string to use as Authorization Bearer Token |
+| Name                | Description                         | Default |
+| ------------------- | ----------------------------------- | ------- |
+| NEXT_PUBLIC_API_URL | The public web url of Brer instance | -       |
 
 ### Install dependencies
 
