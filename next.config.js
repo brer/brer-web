@@ -3,6 +3,7 @@ const nextConfig = {
   reactStrictMode: false,
   output: 'export',
   distDir: 'dist',
+  images: { loader: 'custom' },
   /* 
   ONLY FOR LOCAL DEVELOPMENT
   async rewrites() {
