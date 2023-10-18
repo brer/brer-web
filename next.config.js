@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
+  output: 'export',
+  distDir: 'dist',
+  /* 
+  ONLY FOR LOCAL DEVELOPMENT
   async rewrites() {
     return [
       {
@@ -8,7 +12,7 @@ const nextConfig = {
         destination: `${process.env.NEXT_PUBLIC_API_URL}/api/:path*`,
       },
     ]
-  },
+  }, */
 }
 
 module.exports = nextConfig
