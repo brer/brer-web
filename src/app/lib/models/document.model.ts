@@ -24,6 +24,10 @@ export interface Document {
    */
   updatedAt?: string
   /**
+   * The project name
+   */
+  project?: string
+  /**
    * Uploaded attachments.
    */
   _attachments?: Record<string, DocumentAttachment>

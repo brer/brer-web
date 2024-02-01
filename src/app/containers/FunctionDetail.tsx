@@ -179,9 +179,31 @@ function Header({
           >
             {fn.name}
           </h1>
-          <p className="text-gray-400 text-sm">
-            <strong>IMAGE</strong> {fn.image}
-          </p>
+          {fn.image && (
+            <div className="flex gap-2">
+              <p className="text-gray-400 text-sm">
+                <strong>HOST</strong> {fn.image.host}
+              </p>
+              <p className="text-gray-400 text-sm">
+                <strong>NAME</strong> {fn.image.name}
+              </p>
+              <p className="text-gray-400 text-sm">
+                <strong>TAG</strong> {fn.image.tag}
+              </p>
+            </div>
+          )}
+          <div className="flex gap-2">
+            {createdAt && (
+              <p className="text-gray-400 text-sm">
+                <strong>CREATED AT</strong> {createdAt}
+              </p>
+            )}
+            {updatedAt && (
+              <p className="text-gray-400 text-sm">
+                <strong>UPDATED AT</strong> {updatedAt}
+              </p>
+            )}
+          </div>
         </div>
         {!isLoading && (
           <div className="flex divide-x">
@@ -229,16 +251,6 @@ function Header({
         )}
         {isLoading && <ArrowPathIcon className="h-6 animate-spin" />}
       </div>
-      {createdAt && (
-        <p className="text-gray-400 text-sm">
-          <strong>CREATED AT</strong> {createdAt}
-        </p>
-      )}
-      {updatedAt && (
-        <p className="text-gray-400 text-sm">
-          <strong>UPDATED AT</strong> {updatedAt}
-        </p>
-      )}
       {fn.env && showEnvs && (
         <div>
           <hr className="my-4"></hr>

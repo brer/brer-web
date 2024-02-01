@@ -1,3 +1,4 @@
+import { Viewport } from 'next'
 import './globals.css'
 import { Inter } from 'next/font/google'
 
@@ -12,14 +13,15 @@ export const metadata = {
     favicon32: 'favicon/favicon-32x32.png',
     appleTouchIcon: 'favicon/apple-touch-icon.png',
   },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-  },
-  themeColor: '#c9b09a',
   assets: '/assets',
   manifest: 'manifest.webmanifest',
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: '#c9b09a',
 }
 
 export default function RootLayout({

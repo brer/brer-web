@@ -3,9 +3,11 @@ export interface AuthParams {
   password: string
 }
 
+export type SessionType = 'basic' | 'cookie' | 'legacy'
+
 export interface Session {
   authenticated: boolean
-  session: 'basic' | 'cookie' | 'legacy'
+  session: SessionType
   user: {
     username: string
   }

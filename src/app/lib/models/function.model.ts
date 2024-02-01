@@ -8,11 +8,17 @@ export interface Fn extends Document {
   /**
    * Docker image url.
    */
-  image: string
+  image?: FnImage
   /**
    * Environment variables (value or secret).
    */
   env: FnEnv[]
+}
+
+export interface FnImage {
+  host: string
+  name: string
+  tag: string
 }
 
 export interface FnEnv {
