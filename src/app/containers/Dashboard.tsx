@@ -149,6 +149,9 @@ export default function Dashboard() {
     }
 
     params.project = searchParams.currentProject
+    params.sort = 'createdAt'
+    params.direction = 'desc'
+
     return params
   }
 
@@ -170,13 +173,25 @@ export default function Dashboard() {
       ></Header>
       <div className="flex flex-row h-full w-full overflow-hidden">
         <div className="flex flex-col w-1/4 lg:w-1/3 max-w-xs h-full border-r">
-          <div className="p-3 border-b">
+          <div className="p-3 border-b flex">
             <Input
               value=""
               placeholder="Search functions"
               icon="lens"
               onChange={handleSearchFunctions}
             ></Input>
+            <Button
+              className="ml-1"
+              style="outline"
+              size="l"
+              onClick={() => {
+                setFunctions([])
+                setCurrentFunction(undefined)
+                currentProject && searchFns({ currentProject })
+              }}
+              icon="reload"
+              title="Reload functions"
+            ></Button>
           </div>
           <div className="h-full overflow-hidden">
             <FunctionsList

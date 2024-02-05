@@ -3,7 +3,7 @@ import { formatDate } from '../lib/libs/date.lib'
 
 interface InvocationLogsParams {
   invocation: Invocation
-  logs: string
+  logs?: string
 }
 
 export default function InvocationLogs({
@@ -25,7 +25,7 @@ export default function InvocationLogs({
         </p>
       )}
       <div className="bg-slate-800 text-white text-xs p-3 mt-3 overflow-auto">
-        <pre>{logs}</pre>
+        <pre>{logs || 'NO LOG'}</pre>
       </div>
     </div>
   )

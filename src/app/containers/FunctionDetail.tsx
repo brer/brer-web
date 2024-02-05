@@ -146,12 +146,11 @@ export default function FunctionDetail({
       {currentInvocation && (
         <Modal
           title={`Log ${currentInvocation.functionName}`}
-          isVisible={!!invocationLogs}
           onDismiss={() => setInvocationLogs(undefined)}
         >
           <InvocationLogs
             invocation={currentInvocation}
-            logs={invocationLogs || ''}
+            logs={invocationLogs}
           ></InvocationLogs>
         </Modal>
       )}
@@ -187,7 +186,7 @@ function Header({
   const updatedAt = fn.updatedAt ? formatDate(fn.updatedAt) : undefined
 
   return (
-    <div className="border-b p-8">
+    <div className="border-b p-3 md:p-4 lg:p-8">
       <div className="flex justify-between items-start">
         <h1
           className="text-2xl font-bold text-yellow-800 truncate whitespace-nowrap"
