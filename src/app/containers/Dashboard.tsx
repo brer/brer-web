@@ -73,8 +73,10 @@ export default function Dashboard() {
           : setFunctions(fns.functions)
       })
       .catch((err) => {
-        console.log('err', err)
         setIsError(true)
+        if (err?.error?.code === 'NOT_AUTHENTICATED') {
+          setAuthModal(true)
+        }
       })
       .finally(() => setIsLoading(false))
   }

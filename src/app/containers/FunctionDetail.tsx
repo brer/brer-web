@@ -201,17 +201,6 @@ function Header({
             <div className="flex flex-nowrap">
               <Button
                 className="mr-2"
-                style="solid"
-                size="m"
-                onClick={() => {
-                  setTriggerParams({})
-                  setModal(true)
-                }}
-                icon="play"
-                title="Play function"
-              ></Button>
-              <Button
-                className="mr-2"
                 color="danger"
                 style="solid"
                 size="m"
@@ -239,12 +228,25 @@ function Header({
                 title="Reload invocations"
               ></Button>
               <Button
-                className="ml-1"
+                className="ml-1 mr-2"
                 style="outline"
                 size="m"
                 onClick={onCloseFunction}
                 icon="x-mark"
                 title="Close function"
+              ></Button>
+            </div>
+            <div>
+              <Button
+                className="ml-2"
+                style="solid"
+                size="m"
+                onClick={() => {
+                  setTriggerParams({})
+                  setModal(true)
+                }}
+                icon="play"
+                title="Play function"
               ></Button>
             </div>
           </div>
