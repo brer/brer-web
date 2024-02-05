@@ -1,19 +1,21 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
-  output: 'export',
+  output: process.env.NEXT_LOCALHOST ? 'standalone' : 'export',
   distDir: 'dist',
   images: { loader: 'custom' },
-  /* 
-  ONLY FOR LOCAL DEVELOPMENT
   async rewrites() {
+    if (!process.env.NEXT_LOCALHOST) {
+      return undefined
+    }
+
     return [
       {
         source: '/api/:path*',
         destination: `${process.env.NEXT_PUBLIC_API_URL}/api/:path*`,
       },
     ]
-  }, */
+  },
 }
 
 module.exports = nextConfig

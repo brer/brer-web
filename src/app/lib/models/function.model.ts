@@ -30,6 +30,7 @@ export interface FnSearchParams {
   name?: string
   continue?: string
   direction?: 'asc' | 'desc'
+  project?: string
   limit?: number
   sort?: 'createdAt' | 'name'
 }

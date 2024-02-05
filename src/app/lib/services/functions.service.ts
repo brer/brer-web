@@ -5,7 +5,7 @@ import {
   FnTriggerParams,
   FnUpdateBody,
 } from '../models/function.model'
-import { postData, getData, putData } from '../libs/http.lib'
+import { postData, getData, putData, deleteData } from '../libs/http.lib'
 import { Invocation } from '../models/invocation.model'
 
 const API_MODEL = 'functions'
@@ -49,7 +49,8 @@ export function updateFunction(
  */
 export function triggerFunction(
   key: string,
-  params: FnTriggerParams = {}
+  params: FnTriggerParams = {},
+  file?: File
 ): Promise<{ function: Fn; invocation: Invocation }> {
   const env = params.env
     ? params.env.reduce(
@@ -57,7 +58,17 @@ export function triggerFunction(
         {}
       )
     : {}
-  return postData(`${API_VERSION}/${API_MODEL}/${key}`, params.body, env)
+
+  let body
+  if (file) {
+    const formData = new FormData()
+    formData.append('file', file)
+    body = formData
+  } else if (params.body) {
+    body = JSON.parse(params.body)
+  }
+
+  return postData(`${API_VERSION}/${API_MODEL}/${key}`, body, env, false)
 }
 
 /**
@@ -69,4 +80,13 @@ export function searchFunctions(
   params?: FnSearchParams
 ): Promise<{ continue: string; functions: Fn[] }> {
   return getData(`${API_VERSION}/${API_MODEL}`, params)
+}
+
+/**
+ * Delete a function
+ * @param key - the function key
+ * @returns the Promise<void> for delete a function
+ */
+export function deleteFunction(key: string): Promise<void> {
+  return deleteData(`${API_VERSION}/${API_MODEL}/${key}`)
 }

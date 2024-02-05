@@ -92,7 +92,7 @@ interface ContentParams {
 
 function Content({ invocation }: ContentParams) {
   return (
-    <div className="p-8 h-full">
+    <div className="p-8 h-full overflow-auto">
       <div>
         <p className="text-gray-400 text-sm">
           <strong>PHASES</strong>

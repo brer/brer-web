@@ -5,11 +5,13 @@ import FunctionEnv from './FunctionEnv'
 interface FunctionTriggerParams {
   params: FnTriggerParams
   onParamsChange: (params: FnTriggerParams) => void
+  onFileChange: (e: File | undefined) => void
 }
 
 export default function FunctionTrigger({
   params,
   onParamsChange,
+  onFileChange,
 }: FunctionTriggerParams) {
   return (
     <form className="w-full">
@@ -28,6 +30,20 @@ export default function FunctionTrigger({
             }}
             rows={3}
           ></Textarea>
+        </div>
+      </div>
+      <div className="flex flex-wrap mb-6">
+        <div className="w-full">
+          <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+            JSON File
+          </label>
+          <input
+            id="file"
+            type="file"
+            onChange={(ev) =>
+              onFileChange(ev.target.files ? ev.target.files[0] : undefined)
+            }
+          />
         </div>
       </div>
       <div className="flex flex-wrap mb-6">

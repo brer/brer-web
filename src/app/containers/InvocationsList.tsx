@@ -39,7 +39,7 @@ export default function InvocationsList({
     return (
       <div className={wrapperClasses}>
         <ExclamationCircleIcon className="h-24" />
-        <h2>Ops, something went wrong!</h2>
+        <h2 className="text-center">Ops, something went wrong!</h2>
       </div>
     )
   }
@@ -48,7 +48,7 @@ export default function InvocationsList({
     return (
       <div className={wrapperClasses}>
         <QueueListIcon className="h-24" />
-        <h2>No functions avaialable!</h2>
+        <h2 className="text-center">No functions avaialable!</h2>
       </div>
     )
   }

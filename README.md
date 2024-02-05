@@ -11,9 +11,16 @@ This repository contains the Brer front-end application and related libraries de
 It's necessary to create a `.env` file at the root of the project with two variables.<br>
 Without these variables the application <b>will not work properly</b>.
 
-| Name                | Description                         | Default |
-| ------------------- | ----------------------------------- | ------- |
-| NEXT_PUBLIC_API_URL | The public web url of Brer instance | -       |
+| Name                | Description                                                    | Default |
+| ------------------- | -------------------------------------------------------------- | ------- |
+| NEXT_PUBLIC_API_URL | The public web url of Brer instance                            | -       |
+| NEXT_LOCALHOST      | Indicates if the application is working in a local environment | TRUE    |
+
+<br>
+
+> N.B. for local development it's required to run brer backend too.
+
+<br>
 
 ### Install dependencies
 

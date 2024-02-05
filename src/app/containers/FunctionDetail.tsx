@@ -22,18 +22,23 @@ import {
 } from '../lib/services/invocations.service'
 import { formatDate } from '../lib/libs/date.lib'
 import InvocationLogs from './InvocationLogs'
-import { triggerFunction } from '../lib/services/functions.service'
+import {
+  deleteFunction,
+  triggerFunction,
+} from '../lib/services/functions.service'
 import Modal from '../components/Modal'
 import FunctionTrigger from './FunctionTrigger'
 
 interface FunctionDetailParams {
   fn: Fn
   onCloseFunction: () => void
+  onDeleteFunction: () => void
 }
 
 export default function FunctionDetail({
   fn,
   onCloseFunction,
+  onDeleteFunction,
 }: FunctionDetailParams) {
   const [invocations, setInvocations] = useState<Invocation[] | undefined>()
   const [currentInvocation, setCurrentInvocation] = useState<
@@ -67,9 +72,9 @@ export default function FunctionDetail({
     setCurrentInvocation(invocation)
   const handleUnselectInvocation = () => setCurrentInvocation(undefined)
   const handleToggleEnvs = (show: boolean) => setShowEnvs(show)
-  const handlePlayInvocation = (params: FnTriggerParams) => {
+  const handlePlayInvocation = (params: FnTriggerParams, file?: File) => {
     setIsFunctionLoading(true)
-    triggerFunction(fn.name, params)
+    triggerFunction(fn.name, params, file)
       .then(() => searchInvs())
       .finally(() => setIsFunctionLoading(false))
   }
@@ -84,6 +89,14 @@ export default function FunctionDetail({
     downloadInvocationPayload(invocation._id!)
       .then((res) => saveAs(res, 'payload.json'))
       .finally(() => setIsFunctionLoading(false))
+  }
+  const handleDeleteFunction = () => {
+    if (fn.name) {
+      setIsFunctionLoading(true)
+      deleteFunction(fn.name)
+        .then(() => onDeleteFunction())
+        .finally(() => setIsFunctionLoading(false))
+    }
   }
 
   // Lifecycle
@@ -116,6 +129,7 @@ export default function FunctionDetail({
         onPlayFunction={handlePlayInvocation}
         onReloadFunction={() => searchInvs()}
         onCloseFunction={onCloseFunction}
+        onDeleteFunction={handleDeleteFunction}
         onToggleEnvFunction={handleToggleEnvs}
       ></Header>
       <FunctionInvocations
@@ -149,10 +163,11 @@ interface HeaderParams {
   fn: Fn
   showEnvs: boolean
   isLoading: boolean
-  onPlayFunction: (params: FnTriggerParams) => void
+  onPlayFunction: (params: FnTriggerParams, file?: File) => void
   onReloadFunction: () => void
   onCloseFunction: () => void
   onToggleEnvFunction: (show: boolean) => void
+  onDeleteFunction: () => void
 }
 
 function Header({
@@ -163,51 +178,27 @@ function Header({
   onReloadFunction,
   onCloseFunction,
   onToggleEnvFunction,
+  onDeleteFunction,
 }: HeaderParams) {
   const [modal, setModal] = useState(false)
   const [triggerParams, setTriggerParams] = useState<FnTriggerParams>({})
+  const [triggerFile, setTriggerFile] = useState<File | undefined>()
   const createdAt = fn.createdAt ? formatDate(fn.createdAt) : undefined
   const updatedAt = fn.updatedAt ? formatDate(fn.updatedAt) : undefined
 
   return (
     <div className="border-b p-8">
       <div className="flex justify-between items-start">
-        <div>
-          <h1
-            className="text-2xl font-bold text-yellow-800 truncate whitespace-nowrap"
-            title={fn.name}
-          >
-            {fn.name}
-          </h1>
-          {fn.image && (
-            <div className="flex gap-2">
-              <p className="text-gray-400 text-sm">
-                <strong>HOST</strong> {fn.image.host}
-              </p>
-              <p className="text-gray-400 text-sm">
-                <strong>NAME</strong> {fn.image.name}
-              </p>
-              <p className="text-gray-400 text-sm">
-                <strong>TAG</strong> {fn.image.tag}
-              </p>
-            </div>
-          )}
-          <div className="flex gap-2">
-            {createdAt && (
-              <p className="text-gray-400 text-sm">
-                <strong>CREATED AT</strong> {createdAt}
-              </p>
-            )}
-            {updatedAt && (
-              <p className="text-gray-400 text-sm">
-                <strong>UPDATED AT</strong> {updatedAt}
-              </p>
-            )}
-          </div>
-        </div>
+        <h1
+          className="text-2xl font-bold text-yellow-800 truncate whitespace-nowrap"
+          title={fn.name}
+        >
+          {fn.name}
+        </h1>
+
         {!isLoading && (
-          <div className="flex divide-x">
-            <div>
+          <div className="flex flex-nowrap divide-x">
+            <div className="flex flex-nowrap">
               <Button
                 className="mr-2"
                 style="solid"
@@ -219,8 +210,17 @@ function Header({
                 icon="play"
                 title="Play function"
               ></Button>
+              <Button
+                className="mr-2"
+                color="danger"
+                style="solid"
+                size="m"
+                onClick={onDeleteFunction}
+                icon="delete"
+                title="Delete function"
+              ></Button>
             </div>
-            <div>
+            <div className="flex flex-nowrap">
               <Button
                 className="ml-2 mr-1"
                 style={showEnvs ? 'solid' : 'outline'}
@@ -251,6 +251,31 @@ function Header({
         )}
         {isLoading && <ArrowPathIcon className="h-6 animate-spin" />}
       </div>
+      {fn.image && (
+        <div className="flex gap-2">
+          <p className="text-gray-400 text-sm">
+            <strong>HOST</strong> {fn.image.host}
+          </p>
+          <p className="text-gray-400 text-sm">
+            <strong>NAME</strong> {fn.image.name}
+          </p>
+          <p className="text-gray-400 text-sm">
+            <strong>TAG</strong> {fn.image.tag}
+          </p>
+        </div>
+      )}
+      <div className="flex gap-2">
+        {createdAt && (
+          <p className="text-gray-400 text-sm">
+            <strong>CREATED AT</strong> {createdAt}
+          </p>
+        )}
+        {updatedAt && (
+          <p className="text-gray-400 text-sm">
+            <strong>UPDATED AT</strong> {updatedAt}
+          </p>
+        )}
+      </div>
       {fn.env && showEnvs && (
         <div>
           <hr className="my-4"></hr>
@@ -278,7 +303,7 @@ function Header({
             label: 'Trigger function',
             actionId: 'trigger',
             callback: (actionId) => {
-              onPlayFunction(triggerParams)
+              onPlayFunction(triggerParams, triggerFile)
               setModal(false)
             },
           },
@@ -288,6 +313,7 @@ function Header({
         <FunctionTrigger
           params={triggerParams}
           onParamsChange={setTriggerParams}
+          onFileChange={setTriggerFile}
         ></FunctionTrigger>
       </Modal>
     </div>

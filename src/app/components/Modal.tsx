@@ -25,19 +25,14 @@ export default function Modal({
   isVisible = false,
 }: ModalParams) {
   let wrapperClasses =
-    'absolute z-50 h-screen w-screen p-4 overflow-x-hidden overflow-y-auto md:inset-0 bg-gray-700 bg-opacity-50'
+    'absolute lg:rounded-xl z-50 h-full w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 bg-gray-700 bg-opacity-50'
 
   if (!isVisible) {
     wrapperClasses += ' hidden'
   }
 
   return (
-    <div
-      style={{ top: '-4rem', left: '-4rem' }}
-      tabIndex={-1}
-      aria-hidden="true"
-      className={wrapperClasses}
-    >
+    <div tabIndex={-1} aria-hidden="true" className={wrapperClasses}>
       <div className="relative m-auto max-w-2xl max-h-full bg-white rounded-lg shadow">
         {/* Header */}
         <div className="flex items-start justify-between pt-4 px-4 rounded-t">

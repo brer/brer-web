@@ -50,7 +50,7 @@ export default function FunctionsList({
     return (
       <div className={wrapperClasses}>
         <QueueListIcon className="h-24" />
-        <h2>No functions avaialable!</h2>
+        <h2 className="text-center">No functions avaialable!</h2>
       </div>
     )
   }

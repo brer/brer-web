@@ -9,6 +9,7 @@ export interface Session {
   authenticated: boolean
   session: SessionType
   user: {
+    projects: string[]
     username: string
   }
 }

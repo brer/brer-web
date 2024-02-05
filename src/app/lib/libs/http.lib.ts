@@ -10,12 +10,17 @@ function fetchData(
   method: 'POST' | 'GET' | 'DELETE' | 'PUT' | 'PATCH',
   apiModel: string,
   body?: any,
-  headers?: any
+  headers?: any,
+  stringify = true
 ): Promise<Response> {
   const API_URL = process.env.NEXT_PUBLIC_API_URL
 
   if (!API_URL) {
     throw new Error('Brer application not correctly configured')
+  }
+
+  if (body) {
+    body = stringify ? JSON.stringify(body) : undefined
   }
 
   return fetch(`/api/${apiModel}`, {
@@ -25,7 +30,7 @@ function fetchData(
       'Content-Type': 'application/json',
       ...(headers || {}),
     },
-    body: body ? JSON.stringify(body) : undefined,
+    body,
   }).then((response) => {
     if (!response.ok) {
       return Promise.reject(response)
@@ -44,9 +49,10 @@ function fetchData(
 export async function postData<T>(
   api: string,
   body = {},
-  headers = {}
+  headers = {},
+  stringify = true
 ): Promise<T> {
-  return fetchData('POST', api, body, headers).then((response) =>
+  return fetchData('POST', api, body, headers, stringify).then((response) =>
     response.json()
   )
 }
@@ -90,8 +96,8 @@ export async function patchData<T>(api: string, body = {}): Promise<T> {
  * @param body - the body params to send
  * @returns the Promise<T> to make the request
  */
-export async function deleteData<T>(api: string, body = {}): Promise<T> {
-  return fetchData('DELETE', api, body).then((response) => response.json())
+export async function deleteData(api: string, body = {}): Promise<any> {
+  return fetchData('DELETE', api, body)
 }
 
 /**

@@ -5,21 +5,31 @@ import {
   AdjustmentsHorizontalIcon,
   ArrowPathIcon,
   MinusIcon,
+  TrashIcon,
 } from '@heroicons/react/20/solid'
 
 interface ButtonParams {
   size: 'xs' | 's' | 'm' | 'l' | 'xl'
+  color?: 'primary' | 'danger'
   style: 'solid' | 'outline' | 'link'
   onClick: () => void
   className?: string
   children?: React.ReactNode
-  icon?: 'plus' | 'minus' | 'x-mark' | 'play' | 'adjustments' | 'reload'
+  icon?:
+    | 'plus'
+    | 'minus'
+    | 'x-mark'
+    | 'play'
+    | 'adjustments'
+    | 'reload'
+    | 'delete'
   title?: string
   disabled?: boolean
 }
 
 export default function Button({
   size,
+  color = 'primary',
   icon,
   style,
   children,
@@ -33,27 +43,38 @@ export default function Button({
     className +
     ' inline-flex nowrap flex-nowrap items-center px-2 py-1 focus:outline-none focus:ring disabled:opacity-50'
 
-  if (style === 'solid') {
-    btnClasses +=
-      ' bg-yellow-800 text-white' +
-      ' hover:bg-yellow-900' +
-      ' active:bg-yellow-950' +
-      ' active:ring-yellow-950' +
-      ' focus:ring-yellow-700'
-  } else if (style === 'outline') {
-    btnClasses +=
-      ' bg-white text-yellow-800 ' +
-      ' border border-yellow-800' +
-      ' hover:bg-gray-200' +
-      ' active:bg-gray-300' +
-      ' active:ring-yellow-950' +
-      ' focus:ring-gray-400'
-  } else if (style === 'link') {
-    ' bg-white text-yellow-800 ' +
-      ' hover:bg-gray-200' +
-      ' active:bg-gray-300' +
-      ' active:ring-yellow-950' +
-      ' focus:ring-gray-400'
+  if (color === 'primary') {
+    if (style === 'solid') {
+      btnClasses +=
+        ' bg-yellow-800 text-white' +
+        ' hover:bg-yellow-900' +
+        ' active:bg-yellow-950' +
+        ' active:ring-yellow-950' +
+        ' focus:ring-yellow-700'
+    } else if (style === 'outline') {
+      btnClasses +=
+        ' bg-white text-yellow-800' +
+        ' border border-yellow-800' +
+        ' hover:bg-gray-200' +
+        ' active:bg-gray-300' +
+        ' active:ring-yellow-950' +
+        ' focus:ring-gray-400'
+    } else if (style === 'link') {
+      ' bg-white text-yellow-800' +
+        ' hover:bg-gray-200' +
+        ' active:bg-gray-300' +
+        ' active:ring-yellow-950' +
+        ' focus:ring-gray-400'
+    }
+  } else if (color === 'danger') {
+    if (style === 'solid') {
+      btnClasses +=
+        ' bg-red-500 text-white' +
+        ' hover:bg-red-600' +
+        ' active:bg-red-750' +
+        ' active:ring-red-850' +
+        ' focus:ring-red-400'
+    }
   }
 
   if (size === 's') {
@@ -82,6 +103,8 @@ export default function Button({
     buttonIcon = <AdjustmentsHorizontalIcon className={iconClasses} />
   } else if (icon === 'reload') {
     buttonIcon = <ArrowPathIcon className={iconClasses} />
+  } else if (icon === 'delete') {
+    buttonIcon = <TrashIcon className={iconClasses} />
   }
 
   return (
