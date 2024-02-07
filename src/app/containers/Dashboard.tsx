@@ -133,13 +133,12 @@ export default function Dashboard() {
   const handleSelectFunction = (fn: Fn) => setCurrentFunction(fn)
   const handleUnselectFunction = () => setCurrentFunction(undefined)
   const handleErrorFunction = (err: any) => {
-    if (err?.error?.code === 'NOT_AUTHENTICATED') {
-      setAuthModal(true)
-    } else if (err?.error?.code && err?.error?.message) {
-      const { code, message } = err.error
-      toast.error(`${message} [${code}]`)
-    } else if (err?.status && err?.statusText) {
-      toast.error(`${err.statusText} [${err.status}]`)
+    if (err?.status && err?.statusText) {
+      if (err.status === 401) {
+        setAuthModal(true)
+      } else {
+        toast.error(`${err.statusText} [${err.status}]`)
+      }
     } else {
       toast.error('Ops, something went wrong')
     }

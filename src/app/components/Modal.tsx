@@ -25,7 +25,7 @@ export default function Modal({
   isVisible = false,
 }: ModalParams) {
   let wrapperClasses =
-    'absolute lg:rounded-xl z-50 h-full w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 bg-gray-700 bg-opacity-50'
+    'absolute lg:rounded-xl z-50 h-full w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 bg-gray-700 bg-opacity-50 justify-center'
 
   if (!isVisible) {
     wrapperClasses += ' hidden'
