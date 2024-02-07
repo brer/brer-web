@@ -65,7 +65,11 @@ export function triggerFunction(
     formData.append('file', file)
     body = formData
   } else if (params.body) {
-    body = JSON.parse(params.body)
+    try {
+      body = JSON.parse(params.body)
+    } catch (e) {
+      body = params.body
+    }
   }
 
   return postData(`${API_VERSION}/${API_MODEL}/${key}`, body, env, false)

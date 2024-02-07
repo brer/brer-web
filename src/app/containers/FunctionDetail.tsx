@@ -16,6 +16,7 @@ import {
   InvocationSearchParams,
 } from '../lib/models/invocation.model'
 import {
+  deleteInvocation,
   downloadInvocationPayload,
   readInvocationLogs,
   searchInvocations,
@@ -33,12 +34,14 @@ interface FunctionDetailParams {
   fn: Fn
   onCloseFunction: () => void
   onDeleteFunction: () => void
+  onErrorFunction: (e: Error) => void
 }
 
 export default function FunctionDetail({
   fn,
   onCloseFunction,
   onDeleteFunction,
+  onErrorFunction,
 }: FunctionDetailParams) {
   const [invocations, setInvocations] = useState<Invocation[] | undefined>()
   const [currentInvocation, setCurrentInvocation] = useState<
@@ -65,7 +68,10 @@ export default function FunctionDetail({
         setInvocations(invs.invocations)
         setContinueString(invs.continue)
       })
-      .catch((err) => setIsError(true))
+      .catch((err) => {
+        setIsError(true)
+        onErrorFunction(err)
+      })
       .finally(() => setIsLoading(false))
   }
   const handleSelectInvocation = (invocation: Invocation) =>
@@ -76,18 +82,31 @@ export default function FunctionDetail({
     setIsFunctionLoading(true)
     triggerFunction(fn.name, params, file)
       .then(() => searchInvs())
+      .catch((err) => onErrorFunction(err))
       .finally(() => setIsFunctionLoading(false))
   }
   const handleLogInvocation = (invocation: Invocation) => {
     setIsFunctionLoading(true)
     readInvocationLogs(invocation._id!)
       .then((logs) => setInvocationLogs(logs))
+      .catch((err) => onErrorFunction(err))
+      .finally(() => setIsFunctionLoading(false))
+  }
+  const handleDeleteInvocation = (invoication: Invocation) => {
+    setIsFunctionLoading(true)
+    deleteInvocation(invoication._id!)
+      .then(() => {
+        setCurrentInvocation(undefined)
+        searchInvs()
+      })
+      .catch((err) => onErrorFunction(err))
       .finally(() => setIsFunctionLoading(false))
   }
   const handlePayloadInvocation = (invocation: Invocation) => {
     setIsFunctionLoading(true)
     downloadInvocationPayload(invocation._id!)
       .then((res) => saveAs(res, 'payload.json'))
+      .catch((err) => onErrorFunction(err))
       .finally(() => setIsFunctionLoading(false))
   }
   const handleDeleteFunction = () => {
@@ -95,6 +114,7 @@ export default function FunctionDetail({
       setIsFunctionLoading(true)
       deleteFunction(fn.name)
         .then(() => onDeleteFunction())
+        .catch((err) => onErrorFunction(err))
         .finally(() => setIsFunctionLoading(false))
     }
   }
@@ -141,6 +161,7 @@ export default function FunctionDetail({
         onUnselectInvocation={handleUnselectInvocation}
         onLogInvocation={handleLogInvocation}
         onPayloadInvocation={handlePayloadInvocation}
+        onDeleteInvocation={handleDeleteInvocation}
         currentInvocation={currentInvocation}
       ></FunctionInvocations>
       {currentInvocation && (
@@ -330,6 +351,7 @@ interface FunctionInvocationsParams {
   onSelectInvocation: (invocation: Invocation) => void
   onLogInvocation: (invocation: Invocation) => void
   onPayloadInvocation: (invocation: Invocation) => void
+  onDeleteInvocation: (invocation: Invocation) => void
   onUnselectInvocation: () => void
 }
 
@@ -343,6 +365,7 @@ function FunctionInvocations({
   onLogInvocation,
   onPayloadInvocation,
   onUnselectInvocation,
+  onDeleteInvocation,
 }: FunctionInvocationsParams) {
   const wrapperClasses =
     isLoading || isError || !invocations?.length
@@ -395,6 +418,7 @@ function FunctionInvocations({
             onCloseFunction={onUnselectInvocation}
             onPayloadFunction={() => onPayloadInvocation(currentInvocation)}
             onLogFunction={() => onLogInvocation(currentInvocation)}
+            onDeleteInvocation={() => onDeleteInvocation(currentInvocation)}
           ></InvocationDetail>
         ) : (
           <div className="flex flex-col justify-center items-center h-full">

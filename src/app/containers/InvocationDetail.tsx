@@ -9,6 +9,7 @@ interface InvocationDetailParams {
   onCloseFunction: () => void
   onPayloadFunction: () => void
   onLogFunction: () => void
+  onDeleteInvocation: () => void
 }
 
 export default function InvocationDetail({
@@ -17,6 +18,7 @@ export default function InvocationDetail({
   onCloseFunction,
   onLogFunction,
   onPayloadFunction,
+  onDeleteInvocation,
 }: InvocationDetailParams) {
   return (
     <div className="flex flex-col h-full">
@@ -24,6 +26,7 @@ export default function InvocationDetail({
         invocation={invocation}
         isLoading={isLoading}
         onCloseFunction={onCloseFunction}
+        onDeleteInvocation={onDeleteInvocation}
       ></Header>
       <Content invocation={invocation}></Content>
       <Footer
@@ -39,9 +42,15 @@ interface HeaderParams {
   invocation: Invocation
   isLoading: boolean
   onCloseFunction: () => void
+  onDeleteInvocation: () => void
 }
 
-function Header({ invocation, isLoading, onCloseFunction }: HeaderParams) {
+function Header({
+  invocation,
+  isLoading,
+  onCloseFunction,
+  onDeleteInvocation,
+}: HeaderParams) {
   const updatedAt = invocation.updatedAt
     ? formatDate(invocation.updatedAt)
     : undefined
@@ -71,7 +80,16 @@ function Header({ invocation, isLoading, onCloseFunction }: HeaderParams) {
             status={invocation.status}
           ></InvocationStatus>
         </div>
-        <div>
+        <div className="flex flex-nowrap divide-x">
+          <Button
+            className="ml-2"
+            color="danger"
+            style="solid"
+            size="m"
+            onClick={onDeleteInvocation}
+            icon="delete"
+            title="Delete invocation"
+          ></Button>
           <Button
             className="ml-2"
             style="outline"

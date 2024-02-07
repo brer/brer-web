@@ -19,6 +19,7 @@ import AuthForm from './AuthForm'
 import FunctionForm from './FunctionForm'
 import { AuthParams } from '../lib/models/auth.model'
 import Select from '../components/Select'
+import { toast } from 'react-toastify'
 
 export default function Dashboard() {
   // Models
@@ -53,7 +54,10 @@ export default function Dashboard() {
           searchFns({ currentProject })
         }
       })
-      .catch((err) => setIsError(true))
+      .catch((err) => {
+        setIsError(true)
+        handleErrorFunction(err)
+      })
       .finally(() => setIsLoading(false))
   }
 
@@ -74,9 +78,7 @@ export default function Dashboard() {
       })
       .catch((err) => {
         setIsError(true)
-        if (err?.error?.code === 'NOT_AUTHENTICATED') {
-          setAuthModal(true)
-        }
+        handleErrorFunction(err)
       })
       .finally(() => setIsLoading(false))
   }
@@ -95,7 +97,10 @@ export default function Dashboard() {
       .then(
         (fn) => currentProject && searchFns({ currentProject, loadMore: true })
       )
-      .catch((err) => setIsError(true))
+      .catch((err) => {
+        setIsError(true)
+        handleErrorFunction(err)
+      })
       .finally(() => setIsLoading(false))
   }
 
@@ -127,6 +132,18 @@ export default function Dashboard() {
   }
   const handleSelectFunction = (fn: Fn) => setCurrentFunction(fn)
   const handleUnselectFunction = () => setCurrentFunction(undefined)
+  const handleErrorFunction = (err: any) => {
+    if (err?.error?.code === 'NOT_AUTHENTICATED') {
+      setAuthModal(true)
+    } else if (err?.error?.code && err?.error?.message) {
+      const { code, message } = err.error
+      toast.error(`${message} [${code}]`)
+    } else if (err?.status && err?.statusText) {
+      toast.error(`${err.statusText} [${err.status}]`)
+    } else {
+      toast.error('Ops, something went wrong')
+    }
+  }
 
   // Lifecycle
   useEffect(() => initDashboard(), [])
@@ -218,6 +235,7 @@ export default function Dashboard() {
                 currentProject && searchFns({ currentProject })
                 setCurrentFunction(undefined)
               }}
+              onErrorFunction={handleErrorFunction}
             ></FunctionDetail>
           ) : (
             <div className="flex flex-col justify-center items-center h-full">
@@ -261,7 +279,6 @@ interface HeaderParams {
 }
 
 function Header({
-  user,
   currentProject,
   projects,
   onCreateFunction,
@@ -275,12 +292,15 @@ function Header({
       <Logo />
       <div className="flex gap-2">
         {projects ? (
-          <Select
-            placeholder="Current project"
-            onChange={(p) => onChangeProject(p as string | undefined)}
-            value={currentProject}
-            options={projects.map((p) => ({ label: p, value: p }))}
-          ></Select>
+          <div className="flex gap-2">
+            <small className="pt-2">Projects</small>
+            <Select
+              placeholder="Current project"
+              onChange={(p) => onChangeProject(p as string | undefined)}
+              value={currentProject}
+              options={projects.map((p) => ({ label: p, value: p }))}
+            ></Select>
+          </div>
         ) : (
           ''
         )}
