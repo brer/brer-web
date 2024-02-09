@@ -6,7 +6,7 @@ const nextConfig = {
   images: { loader: 'custom' },
   async rewrites() {
     if (!process.env.NEXT_LOCALHOST) {
-      return undefined
+      return []
     }
 
     return [
